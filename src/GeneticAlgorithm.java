@@ -6,10 +6,13 @@ public class GeneticAlgorithm {
 	public static final int POPULATION_SIZE = 8; // Number of chromosomes in a population.
 	// TODO TARGET_CHROMOSOME implementirati na nacin da je jednak posljednjem stupcu ucitanog dataseta.
 	public static final int[]  TARGET_CHROMOSOME = {1,1,0,1,0,0,1,1,1,0}; // Represents the solution.
+	//public static final int[]  TARGET_CHROMOSOME = {0,0,0,1,1,1,1,0,1,0,1,0,0,0,1,1,0,1,1,0,1,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,1,1,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,
+	//		1,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
 	private static final double MUTATION_RATE = 0.25; // Probability that a chromosome gene will be selected for random mutation.
 	public static final int NUMB_OF_ELITE_CHROMOSOMES = 1; // Chromosomes that will not be subjected to crossover or mutation.
 	public static final int TOURNAMENT_SELECTION_SIZE = 4; // Tournament population size, used for chromosome crossover selection
-	
+	//public static final int TOURNAMENT_SELECTION_SIZE = 80; // Tournament population size, used for chromosome crossover selection
+
 	/** Method that evolves population by calling crossover on it, and then mutating it.
 	 * */
 	public Population evolve(Population population) {
@@ -86,7 +89,6 @@ public class GeneticAlgorithm {
 		Population tournamentPopulation = new Population(TOURNAMENT_SELECTION_SIZE);
 		for(int x = 0; x < TOURNAMENT_SELECTION_SIZE; x++) {
 			tournamentPopulation.getChromosomes()[x] = population.getChromosomes()[(int)(Math.random()*population.getChromosomes().length)];
-			
 		}
 		tournamentPopulation.sortChromosomesByFitness();
 		return tournamentPopulation;

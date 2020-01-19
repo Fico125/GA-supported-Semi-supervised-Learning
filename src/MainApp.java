@@ -19,7 +19,7 @@ public class MainApp {
 	private Button btnClose;
 
 	public static void main(String[] args) throws IOException{
-		/*
+		
 		try {
 			MainApp window = new MainApp();
 			window.openWindow();
@@ -27,43 +27,7 @@ public class MainApp {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		*/
-		// GENETIC ALGORITHM START
-		
-		Population population = new Population(GeneticAlgorithm.POPULATION_SIZE).initializePopulation();
-		
-		GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm();
-		
-		System.out.println("--------------------------------------------");
-		System.out.println("Generation # 0" + " | Fittest chromosome fitness: " + population.getChromosomes()[0].getFitness());
-		printPopulation(population, "Target Chromosome: " + Arrays.toString(GeneticAlgorithm.TARGET_CHROMOSOME));
-		
-		int generationNumber = 0;
-		
-		while(population.getChromosomes()[0].getFitness() < GeneticAlgorithm.TARGET_CHROMOSOME.length) {
-			generationNumber++;
-			System.out.println("\n--------------------------------------------");
-			population = geneticAlgorithm.evolve(population);
-			population.sortChromosomesByFitness();
-			System.out.println("Generation # " + generationNumber + " | Fittest chromosome fitness: " + population.getChromosomes()[0].getFitness());
-			printPopulation(population, "Target Chromosome: " + Arrays.toString(GeneticAlgorithm.TARGET_CHROMOSOME));
-			
-		}
-		
 	}
-	
-	public static void printPopulation(Population population, String heading) { 
-		
-		System.out.println(heading);
-		System.out.println("--------------------------------------------");
-		for(int x = 0; x < population.getChromosomes().length; x++) {
-			System.out.println("Chromosome # " + x + " : " + Arrays.toString(population.getChromosomes()[x].getGenes()) + 
-					" | Fitness: " + population.getChromosomes()[x].getFitness());
-		}
-	}
-	
-	// GENETIC ALGORITHM STOP
-
 	
 	public void openWindow() {
 		
@@ -122,6 +86,34 @@ public class MainApp {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				//TODO implementirati izračun i sve ostalo
+				// GENETIC ALGORITHM START
+				
+				Population population = new Population(GeneticAlgorithm.POPULATION_SIZE).initializePopulation();
+				
+				GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm();
+				String textOutput = "";
+
+				System.out.println("--------------------------------------------");
+				textCalculation.append("--------------------------------------------\n");
+				System.out.println("Generation # 0" + " | Fittest chromosome fitness: " + population.getChromosomes()[0].getFitness());
+				textCalculation.append("Generation # 0" + " | Fittest chromosome fitness: " + population.getChromosomes()[0].getFitness() + "\n");
+				textOutput = printPopulation(population, "Target Chromosome: " + Arrays.toString(GeneticAlgorithm.TARGET_CHROMOSOME));
+				textCalculation.append(textOutput);
+				int generationNumber = 0;
+				
+				
+				while(population.getChromosomes()[0].getFitness() < GeneticAlgorithm.TARGET_CHROMOSOME.length) {
+					generationNumber++;
+					System.out.println("\n--------------------------------------------");
+					textCalculation.append("--------------------------------------------\n");
+					population = geneticAlgorithm.evolve(population);
+					population.sortChromosomesByFitness();
+					System.out.println("Generation # " + generationNumber + " | Fittest chromosome fitness: " + population.getChromosomes()[0].getFitness());
+					textCalculation.append("Generation # " + generationNumber + " | Fittest chromosome fitness: " + population.getChromosomes()[0].getFitness() + "\n");
+					textOutput = printPopulation(population, "Target Chromosome: " + Arrays.toString(GeneticAlgorithm.TARGET_CHROMOSOME));
+					textCalculation.append(textOutput);
+				}
+				// GENETIC ALGORITHM STOP
 			}
 		});
 		
@@ -146,5 +138,24 @@ public class MainApp {
 		
 		textScoring = new Text(shlApp, SWT.BORDER | SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
 		textScoring.setBounds(677, 10, 900, 820);
+	}
+	
+	public static String printPopulation(Population population, String heading) { 
+		
+		String outputText = "";
+		
+		System.out.println(heading);
+		outputText = heading + "\n";
+		System.out.println("--------------------------------------------");
+		outputText += "--------------------------------------------\n";
+		for(int x = 0; x < population.getChromosomes().length; x++) {
+			System.out.println("Chromosome # " + x + " : " + Arrays.toString(population.getChromosomes()[x].getGenes()) + 
+					" | Fitness: " + population.getChromosomes()[x].getFitness());
+			outputText += "Chromosome # " + x + " : " + Arrays.toString(population.getChromosomes()[x].getGenes()) + 
+					" | Fitness: " + population.getChromosomes()[x].getFitness() + "\n";
+		}
+		outputText += "\n";
+		
+		return outputText;
 	}
 }
