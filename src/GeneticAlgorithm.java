@@ -1,3 +1,5 @@
+import weka.core.Instances;
+
 /** Class which manages operations of genetic algorithm.
  * */
 public class GeneticAlgorithm {
@@ -12,16 +14,28 @@ public class GeneticAlgorithm {
 	public static final int NUMB_OF_ELITE_CHROMOSOMES = 1; // Chromosomes that will not be subjected to crossover or mutation.
 	public static final int TOURNAMENT_SELECTION_SIZE = 4; // Tournament population size, used for chromosome crossover selection
 	//public static final int TOURNAMENT_SELECTION_SIZE = 80; // Tournament population size, used for chromosome crossover selection
+	private Instances data;
 
-	/** Method that evolves population by calling crossover on it, and then mutating it.
-	 * */
+	public GeneticAlgorithm(Instances data) {
+		this.data = data;
+		final int[]  TARGET_CHROMOSOME_ = FileHandler.getLastColumnValues(data);
+		
+		System.out.println("Last column values:");
+		for(int i = 0; i < TARGET_CHROMOSOME_.length-1; i++) {
+			System.out.print(TARGET_CHROMOSOME_[i] + ", ");
+			
+		}
+		System.out.println();
+		//TODO TARGET_CHROMOSOME implementirati da bude jednak TARGET_CHROMOSOME_, i da uz to bude public final.
+	}
+	
+	/** Method that evolves population by calling crossover on it, and then mutating it. */
 	public Population evolve(Population population) {
 		
 		return mutatePopulation(crossoverPopulation(population));
 	}
 	
-	/** Method that applies crossover to some chromosomes in a population.
-	 * */
+	/** Method that applies crossover to some chromosomes in a population. */
 	private Population crossoverPopulation(Population population) {
 		
 		Population crossoverPopulation = new Population(population.getChromosomes().length);
@@ -39,8 +53,8 @@ public class GeneticAlgorithm {
 		}
 		return crossoverPopulation;
 	}
-	/** Method that applies mutation to some chromosomes in a population.
-	 * */
+	
+	/** Method that applies mutation to some chromosomes in a population. */
 	private Population mutatePopulation(Population population) {
 		
 		Population mutatePopulation = new Population(population.getChromosomes().length);
@@ -55,8 +69,7 @@ public class GeneticAlgorithm {
 		return mutatePopulation;
 	}
 	
-	/** Method that takes random genes from parent chromosomes and creating a new chromosome from it. 
-	 * */
+	/** Method that takes random genes from parent chromosomes and creating a new chromosome from it. */
 	private Chromosome crossoverChromosome(Chromosome chromosome1, Chromosome chromosome2) {
 		
 		Chromosome crossoverChromosome = new Chromosome(TARGET_CHROMOSOME.length);
@@ -67,8 +80,7 @@ public class GeneticAlgorithm {
 		return crossoverChromosome;
 	}
 	
-	/** Method that applies randomness on parsed chromosome before returning it.
-	 * */
+	/** Method that applies randomness on parsed chromosome before returning it. */
 	private Chromosome mutateChromosome(Chromosome chromosome) {
 		
 		Chromosome mutateChromosome = new Chromosome(TARGET_CHROMOSOME.length);
@@ -82,8 +94,7 @@ public class GeneticAlgorithm {
 		return mutateChromosome;
 	}
 	
-	/** Method in which a number of chromosomes are selected randomly and from those the one with the highest fitness is chosen for tournament.
-	 * */
+	/** Method in which a number of chromosomes are selected randomly and from those the one with the highest fitness is chosen for tournament. */
 	private Population selectTournamentPopulation(Population population) {
 		
 		Population tournamentPopulation = new Population(TOURNAMENT_SELECTION_SIZE);

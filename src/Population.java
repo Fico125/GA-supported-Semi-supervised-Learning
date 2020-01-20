@@ -5,15 +5,13 @@ public class Population {
 	private Chromosome[] chromosomes;
 
 	/** Population represents a population of chromosomes.
-	 * @param length size of the population.
-	 * */
+	 * @param length size of the population. */
 	public Population(int length) {
 		
 		chromosomes = new Chromosome[length];
 	}
 	
-	/** Method that initializes an array of chromosomes.
-	 * */
+	/** Method that initializes an array of chromosomes. */
 	public Population initializePopulation() {
 		
 		for(int x = 0; x < chromosomes.length; x++) {

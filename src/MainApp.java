@@ -90,7 +90,7 @@ public class MainApp {
 				
 				Population population = new Population(GeneticAlgorithm.POPULATION_SIZE).initializePopulation();
 				
-				GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm();
+				GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(input.getData());
 				String textOutput = "";
 
 				System.out.println("--------------------------------------------");

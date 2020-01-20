@@ -7,15 +7,13 @@ public class Chromosome {
 	private int[] genes;
 	
 	/** Chromosome represents a candidate soludion made of N genes.
-	 * @param length size for an array of genes.
-	 * */
+	 * @param length size for an array of genes. */
 	public Chromosome(int length) {
 		
 		genes = new int[length];
 	}
 	
-	/** Method for initializing chromosome genes with 0-s and 1-s on random.
-	 */
+	/** Method for initializing chromosome genes with 0-s and 1-s on random. */
 	public Chromosome initializeChromosome() {
 		
 		for(int x = 0; x < genes.length; x++) {
@@ -40,8 +38,7 @@ public class Chromosome {
 		return fitness;
 	}
 	
-	/** Method for calculating fitness of a chromosome by comparing it with the target chromosome.
-	 * */
+	/** Method for calculating fitness of a chromosome by comparing it with the target chromosome. */
 	public int recalculateFitness() {
 		
 		int chromosomeFitness = 0;
