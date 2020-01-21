@@ -43,7 +43,9 @@ public class Chromosome {
 		
 		int chromosomeFitness = 0;
 		for(int x = 0; x < genes.length; x++) {
+			//if(genes[x] == GeneticAlgorithm.TARGET_CHROMOSOME[x]) chromosomeFitness++;
 			if(genes[x] == GeneticAlgorithm.TARGET_CHROMOSOME[x]) chromosomeFitness++;
+
 		}
 		return chromosomeFitness;
 	}

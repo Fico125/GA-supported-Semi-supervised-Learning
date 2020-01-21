@@ -48,7 +48,7 @@ public class MainApp {
 		shlApp = new Shell();
 		shlApp.setMinimumSize(90, 22);
 		shlApp.setSize(1500, 698);
-		shlApp.setText("Machine Learning Project");
+		shlApp.setText("Software Defect Prediction");
 		
 		Input input = new Input();
 		
@@ -66,7 +66,8 @@ public class MainApp {
 			public void widgetSelected(SelectionEvent e) {
 				try {
 					FileDialog fileDialog = new FileDialog(shlApp, SWT.MULTI);
-					String firstFile = fileDialog.open();
+					@SuppressWarnings("unused")
+					String firstFile = fileDialog.open(); // if SupressWarnings is moved, this is "unused", but fileDialog wont open without it.
 					String fileName = fileDialog.getFileName();
 					String filePath = fileDialog.getFilterPath();
 					input.readFile(fileName, filePath);
@@ -87,10 +88,9 @@ public class MainApp {
 			public void widgetSelected(SelectionEvent e) {
 				//TODO implementirati izračun i sve ostalo
 				// GENETIC ALGORITHM START
-				
-				Population population = new Population(GeneticAlgorithm.POPULATION_SIZE).initializePopulation();
-				
+								
 				GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(input.getData());
+				Population population = new Population(GeneticAlgorithm.POPULATION_SIZE).initializePopulation();
 				String textOutput = "";
 
 				System.out.println("--------------------------------------------");
