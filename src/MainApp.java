@@ -9,14 +9,19 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+
+import weka.core.Instances;
 /** Class containing main method.
  * */
 public class MainApp {
+	
+	public static final int MAXIMUM_NUMBER_OF_GENERATIONS = 1000;
 	
 	protected Shell shlApp;
 	private Text textCalculation;
 	private Text textScoring;
 	private Button btnClose;
+	
 
 	public static void main(String[] args) throws IOException{
 		
@@ -86,8 +91,6 @@ public class MainApp {
 		btnIzracunaj.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				//TODO implementirati izračun i sve ostalo
-				// GENETIC ALGORITHM START
 								
 				GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(input.getData());
 				Population population = new Population(GeneticAlgorithm.POPULATION_SIZE).initializePopulation();
@@ -101,19 +104,23 @@ public class MainApp {
 				textCalculation.append(textOutput);
 				int generationNumber = 0;
 				
-				
-				while(population.getChromosomes()[0].getFitness() < GeneticAlgorithm.TARGET_CHROMOSOME.length) {
+				while((population.getChromosomes()[0].getFitness() < GeneticAlgorithm.TARGET_CHROMOSOME.length) && generationNumber < MAXIMUM_NUMBER_OF_GENERATIONS) {
 					generationNumber++;
 					System.out.println("\n--------------------------------------------");
 					textCalculation.append("--------------------------------------------\n");
 					population = geneticAlgorithm.evolve(population);
 					population.sortChromosomesByFitness();
+					//TODO implementirati naive bayes za svaki kromosom te populacije. Dobiti ću listu naive bayes modela, nakon x iteracija imati ćemo model
+					// bayesa sa najboljom predikcijom, s kojim ćemo onda testirati 3.1 dataset.
+					Instances dataWithoutLastColumn = FileHandler.getDataWithoutLastColumn(input.getData());
+					Instances mergedData = FileHandler.mergeDataWithLastColumn(dataWithoutLastColumn, population.getChromosomes()[0]);
+					// Bayes ide sada, trening sa datasetom koji se nalazi u mergedData.
+					//
 					System.out.println("Generation # " + generationNumber + " | Fittest chromosome fitness: " + population.getChromosomes()[0].getFitness());
 					textCalculation.append("Generation # " + generationNumber + " | Fittest chromosome fitness: " + population.getChromosomes()[0].getFitness() + "\n");
 					textOutput = printPopulation(population, "Target Chromosome: " + Arrays.toString(GeneticAlgorithm.TARGET_CHROMOSOME));
 					textCalculation.append(textOutput);
 				}
-				// GENETIC ALGORITHM STOP
 			}
 		});
 		

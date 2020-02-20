@@ -4,28 +4,22 @@ import weka.core.Instances;
  * */
 public class GeneticAlgorithm {
 
-	// TODO provjeriti da li bi populacija trebala imati vise/manje chromosoma u sebi. (8)
-	public static final int POPULATION_SIZE = 20; // Number of chromosomes in a population. ()(15)
-	public static int[] TARGET_CHROMOSOME;
-	//public static final int[] TARGET_CHROMOSOME = {1,1,0,1,0,0,1,1,1,0}; // Represents the solution.
-	//public static final int[] TARGET_CHROMOSOME = {0,0,0,1,1,1,1,0,1,0,1,0,0,0,1,1,0,1,1,0,1,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,1,1,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,
-	//		1,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+	public static final int POPULATION_SIZE = 20; // Number of chromosomes in a population.
+	public static int[] TARGET_CHROMOSOME; // Chromosome that we are trying to replicate with the genetic algorithm.
 	private static final double MUTATION_RATE = 0.075; // Probability that a chromosome gene will be selected for random mutation.
-	public static final int NUMB_OF_ELITE_CHROMOSOMES = 3; // Chromosomes that will not be subjected to crossover or mutation. (1)(1)
-	public static final int TOURNAMENT_SELECTION_SIZE = 10; // Tournament population size, used for chromosome crossover selection (4)(80)
+	public static final int NUMB_OF_ELITE_CHROMOSOMES = 3; // Chromosomes that will not be subjected to crossover or mutation.
+	public static final int TOURNAMENT_SELECTION_SIZE = 10; // Tournament population size, used for chromosome crossover selection.
 	//private Instances data;
 
 	public GeneticAlgorithm(Instances data) {
-		//this.data = data;
 		final int[]  TARGET_CHROMOSOME_ = FileHandler.getLastColumnValues(data);
-		
+
 		System.out.println("Last column values:");
 		for(int i = 0; i < TARGET_CHROMOSOME_.length-1; i++) {
 			System.out.print(TARGET_CHROMOSOME_[i] + ", ");
 			
 		}
 		System.out.println();
-		//TODO TARGET_CHROMOSOME implementirati da bude jednak TARGET_CHROMOSOME_, i da uz to bude public final.
 		
 		TARGET_CHROMOSOME = TARGET_CHROMOSOME_;
 	}
