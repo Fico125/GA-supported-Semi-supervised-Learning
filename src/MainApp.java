@@ -56,7 +56,7 @@ public class MainApp {
 		shlApp = new Shell();
 		shlApp.setMinimumSize(90, 22);
 		shlApp.setSize(1500, 698);
-		shlApp.setText("Software Defect Prediction");
+		shlApp.setText("Genetic Algorithm supported Semi-supervised Learning");
 		
 		Input input = new Input();
 		
