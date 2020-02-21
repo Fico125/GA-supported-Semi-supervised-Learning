@@ -55,14 +55,14 @@ public class MainApp {
 		
 		shlApp = new Shell();
 		shlApp.setMinimumSize(90, 22);
-		shlApp.setSize(1500, 698);
+		shlApp.setMaximized(true);
 		shlApp.setText("Genetic Algorithm supported Semi-supervised Learning");
 		
 		Input input = new Input();
 		
 		Button btnUcitaj = new Button(shlApp, SWT.NONE);
 		btnUcitaj.setBounds(0, 9, 134, 28);
-		btnUcitaj.setText("Dodaj datoteku");
+		btnUcitaj.setText("Dodaj datoteku (Train)");
 
 		Button btnDatotekaSpremna = new Button(shlApp, SWT.CHECK);
 		btnDatotekaSpremna.setBounds(10, 43, 124, 18);
@@ -87,8 +87,35 @@ public class MainApp {
 			}
 		});
 		
+		Button btnUcitajTest = new Button(shlApp, SWT.NONE);
+		btnUcitajTest.setBounds(0, 67, 134, 28);
+		btnUcitajTest.setText("Dodaj datoteku (Test)");
+
+		Button btnDatotekaTestSpremna = new Button(shlApp, SWT.CHECK);
+		btnDatotekaTestSpremna.setBounds(10, 101, 124, 18);
+		btnDatotekaTestSpremna.setText("Datoteka spremna");
+		btnDatotekaTestSpremna.setEnabled(false);
+		
+		btnUcitajTest.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				try {
+					FileDialog fileDialog = new FileDialog(shlApp, SWT.MULTI);
+					@SuppressWarnings("unused")
+					String firstFile = fileDialog.open(); // if SupressWarnings is moved, this is "unused", but fileDialog wont open without it.
+					String fileName = fileDialog.getFileName();
+					String filePath = fileDialog.getFilterPath();
+					input.readFile(fileName, filePath);
+					btnDatotekaTestSpremna.setSelection(true);
+					
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		
 		Button btnIzracunaj = new Button(shlApp, SWT.NONE);
-		btnIzracunaj.setBounds(0, 67, 134, 28);
+		btnIzracunaj.setBounds(0, 135, 134, 28);
 		btnIzracunaj.setText("Izracunaj");
 		
 		btnIzracunaj.addSelectionListener(new SelectionAdapter() {
@@ -140,7 +167,7 @@ public class MainApp {
 		});
 		
 		btnClose = new Button(shlApp, SWT.NONE);
-		btnClose.setBounds(0, 135, 134, 28);
+		btnClose.setBounds(0, 170, 134, 28);
 		btnClose.setText("Zatvori");
 		
 		btnClose.addSelectionListener(new SelectionAdapter() {
