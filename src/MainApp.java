@@ -18,7 +18,7 @@ import weka.core.Instances;
  * */
 public class MainApp {
 	
-	public static final int MAXIMUM_NUMBER_OF_GENERATIONS = 500;
+	public static final int MAXIMUM_NUMBER_OF_GENERATIONS = 3;
 	
 	protected Shell shlApp;
 	private Text textCalculation;
@@ -58,18 +58,20 @@ public class MainApp {
 		shlApp.setMaximized(true);
 		shlApp.setText("Genetic Algorithm supported Semi-supervised Learning");
 		
-		Input input = new Input();
+		Input inputTrain = new Input();
+		Input inputTest = new Input();
+
 		
-		Button btnUcitaj = new Button(shlApp, SWT.NONE);
-		btnUcitaj.setBounds(0, 9, 134, 28);
-		btnUcitaj.setText("Dodaj datoteku (Train)");
+		Button btnUcitajTrain = new Button(shlApp, SWT.NONE);
+		btnUcitajTrain.setBounds(0, 9, 134, 28);
+		btnUcitajTrain.setText("Dodaj datoteku (Train)");
 
 		Button btnDatotekaSpremna = new Button(shlApp, SWT.CHECK);
 		btnDatotekaSpremna.setBounds(10, 43, 124, 18);
 		btnDatotekaSpremna.setText("Datoteka spremna");
 		btnDatotekaSpremna.setEnabled(false);
 		
-		btnUcitaj.addSelectionListener(new SelectionAdapter() {
+		btnUcitajTrain.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				try {
@@ -78,7 +80,7 @@ public class MainApp {
 					String firstFile = fileDialog.open(); // if SupressWarnings is moved, this is "unused", but fileDialog wont open without it.
 					String fileName = fileDialog.getFileName();
 					String filePath = fileDialog.getFilterPath();
-					input.readFile(fileName, filePath);
+					inputTrain.readFile(fileName, filePath);
 					btnDatotekaSpremna.setSelection(true);
 					
 				} catch (Exception e1) {
@@ -105,7 +107,7 @@ public class MainApp {
 					String firstFile = fileDialog.open(); // if SupressWarnings is moved, this is "unused", but fileDialog wont open without it.
 					String fileName = fileDialog.getFileName();
 					String filePath = fileDialog.getFilterPath();
-					input.readFile(fileName, filePath);
+					inputTest.readFile(fileName, filePath);
 					btnDatotekaTestSpremna.setSelection(true);
 					
 				} catch (Exception e1) {
@@ -122,7 +124,7 @@ public class MainApp {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 								
-				GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(input.getData());
+				GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(inputTrain.getData());
 				Population population = new Population(GeneticAlgorithm.POPULATION_SIZE).initializePopulation();
 				String textOutput = "";
 
@@ -135,26 +137,38 @@ public class MainApp {
 				int generationNumber = 0;
 				
 				while((population.getChromosomes()[0].getFitness() < GeneticAlgorithm.TARGET_CHROMOSOME.length) && generationNumber < MAXIMUM_NUMBER_OF_GENERATIONS) {
+					
 					generationNumber++;
 					population = geneticAlgorithm.evolve(population);
 					population.sortChromosomesByFitness();
 					//TODO implementirati naive bayes za svaki kromosom te populacije. Dobiti ću listu naive bayes modela, nakon x iteracija imati ćemo model
 					// bayesa sa najboljom predikcijom, s kojim ćemo onda testirati 3.1 dataset.
-					Instances dataWithoutLastColumn = FileHandler.getDataWithoutLastColumn(input.getData());
+					Instances dataWithoutLastColumn = FileHandler.getDataWithoutLastColumn(inputTrain.getData());
 					Instances TrainData = FileHandler.mergeDataWithLastColumn(dataWithoutLastColumn, population.getChromosomes()[0]);
 					TrainData.setClassIndex(TrainData.numAttributes() - 1);
 					
+					Instances TestData = inputTrain.getData();
+					Instances PredictionData = inputTest.getData(); // ovo je cijeli test dataset, podaci i zadnji stupac
+					
 					// Naive Bayes, trening sa datasetom koji se nalazi u mergedData.
-					NaiveBayes naiveBayes = new NaiveBayes();
+					//NaiveBayes naiveBayes = new NaiveBayes();
 					try {
+						// PROBA START
+						NaiveBayesModel naiveB = new NaiveBayesModel(TrainData, TestData, PredictionData);
+						naiveB.process();
+						// PROBA END
+						/*
 						naiveBayes.buildClassifier(TrainData);
 						Evaluation eval = new Evaluation(TrainData);
 						eval.crossValidateModel(naiveBayes, TrainData, 5, new Random(1));
+						
 						System.out.println(eval.toSummaryString("\nResults:\n", true));
 						textCalculation.append(eval.toSummaryString("\nResults:\n", true));
 						System.out.println("F-measure: " + eval.fMeasure(1) + ", Precision: " + eval.precision(1) + ", Recall: " + eval.recall(1));
-						textCalculation.append("F-measure: " + eval.fMeasure(1) + ", Precision: " + eval.precision(1) + ", Recall: " + eval.recall(1) + "\n\n");
+						textCalculation.append("F-measure: " + eval.fMeasure(1) + "\nPrecision: " + eval.precision(1) + "\nRecall: " + eval.recall(1) + "\n\n");
+						*/
 					} catch (Exception e1) {
+						
 						e1.printStackTrace();
 					}
 					//
