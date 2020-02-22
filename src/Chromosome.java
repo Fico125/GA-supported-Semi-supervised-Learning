@@ -1,11 +1,19 @@
 import java.util.Arrays;
 
+import weka.classifiers.Evaluation;
+import weka.core.Instances;
+
 public class Chromosome {
 
 	private boolean isFitnessChanged = true; // Used to check if fitness of a chromsome has changed,and if so trigger the recalculation of fitness. 
-	private int fitness = 0; // Representing the fitness of a chromosome.
+	private double fitness = 0.0; // Representing the fitness of a chromosome.
 	private int[] genes;
+	private NaiveBayesModel naiveB;
 	
+	public NaiveBayesModel getNaiveB() {
+		return naiveB;
+	}
+
 	/** Chromosome represents a candidate soludion made of N genes.
 	 * @param length size for an array of genes. */
 	public Chromosome(int length) {
@@ -31,25 +39,27 @@ public class Chromosome {
 		return genes;
 	}
 	
-	public int getFitness() {
-		
-		if(isFitnessChanged) {
-			fitness = recalculateFitness();
-			isFitnessChanged = false;
-		}
-		
+	public double getFitness() {	
 		return fitness;
 	}
 	
 	/** Method for calculating fitness of a chromosome by comparing it with the target chromosome. */
-	public int recalculateFitness() {
+	private double recalculateFitness(Instances trainData, Instances testData) {
+		// ovdje bi trebao trenirati, testirati i evaluirati model.
 		
-		int chromosomeFitness = 0;
-		
-		for(int x = 0; x < genes.length; x++) {
-			//if(genes[x] == GeneticAlgorithm.TARGET_CHROMOSOME[x]) chromosomeFitness++;
-			if(genes[x] == GeneticAlgorithm.TARGET_CHROMOSOME[x]) chromosomeFitness++;
-
+		double chromosomeFitness = 0.0;
+		try {
+			//System.out.println("Naive Bayes training START");
+			naiveB = new NaiveBayesModel(trainData, testData);
+			naiveB.process();
+			
+			// TODO PROVJERITI:mislim da cijeli ovaj ostatak koda može ići u metodu process() koju pozivamo 2 linije iznad?
+			Evaluation evaluation = naiveB.getEvaluation();
+			chromosomeFitness = evaluation.precision(1);
+			System.out.println("Chromosome fitness: (precision)" + chromosomeFitness);
+		} catch (Exception e1) {
+			
+			e1.printStackTrace();
 		}
 		
 		return chromosomeFitness;
@@ -58,5 +68,9 @@ public class Chromosome {
 	public String toString() {
 		
 		return Arrays.toString(this.genes);
+	}
+
+	public void setFitness(Instances trainData, Instances testData) {
+		fitness = recalculateFitness(trainData, testData);
 	}
 }

@@ -74,18 +74,16 @@ public class FileHandler {
     	new_data = new Instances(data);
 
     	lastColumnValues = lastColumn.getGenes();
-    	//System.out.println("Geni dobivenog chromosoma(vrijednosti posljednjeg stupca): " + Arrays.toString(lastColumnValues));
-        
-    	Add filter;
-    	filter = new Add();
-        filter.setAttributeIndex("last");
-        filter.setAttributeName("faulty_GA_predicted");
-        
+
         try {
+        	Add filter;
+        	filter = new Add();
+        	filter.setAttributeIndex("last");
+            filter.setAttributeName("faulty_GA_predicted");
 			filter.setInputFormat(new_data);
 	        new_data = Filter.useFilter(new_data, filter);
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
         
         int brojZadnjegStupca = new_data.numAttributes() - 1;

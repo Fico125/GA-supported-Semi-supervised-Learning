@@ -18,7 +18,7 @@ import weka.core.Instances;
  * */
 public class MainApp {
 	
-	public static final int MAXIMUM_NUMBER_OF_GENERATIONS = 3;
+	public static final int MAXIMUM_NUMBER_OF_GENERATIONS = 100;
 	
 	protected Shell shlApp;
 	private Text textCalculation;
@@ -123,60 +123,68 @@ public class MainApp {
 		btnIzracunaj.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-								
+				//System.out.println("INICIJALIZACIJA GENETSKOG ALGORITMA");				
 				GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(inputTrain.getData());
+				
+				//System.out.println("INICIJALIZACIJA POPULACIJE");
 				Population population = new Population(GeneticAlgorithm.POPULATION_SIZE).initializePopulation();
+				Instances dataWithoutLastColumn = FileHandler.getDataWithoutLastColumn(inputTrain.getData());
+				//Instances trainData = FileHandler.mergeDataWithLastColumn(dataWithoutLastColumn, population.getChromosomes()[0]);
+				Instances trainData = dataWithoutLastColumn; // trainData spajamo sa posljednjim stupcem (GA outputom) prilikom izračunavanja fitnessa u metodi computeFitness
+				trainData.setClassIndex(trainData.numAttributes() - 1);
+				
+				Instances testData = inputTest.getData();
+				Instances predictionData = inputTrain.getData(); // ovo je cijeli test dataset, podaci i zadnji stupac
+				population.computeFitness(trainData, testData);
 				String textOutput = "";
 
+				/*
 				System.out.println("-------------------------------------------------------------------------------------------------------");
 				textCalculation.append("-------------------------------------------------------------------------------------------------------\n");
 				System.out.println("Generation # 0" + " | Fittest chromosome fitness: " + population.getChromosomes()[0].getFitness());
 				textCalculation.append("Generation # 0" + " | Fittest chromosome fitness: " + population.getChromosomes()[0].getFitness() + "\n");
 				textOutput = printPopulation(population, "Target Chromosome: " + Arrays.toString(GeneticAlgorithm.TARGET_CHROMOSOME));
 				textCalculation.append(textOutput);
+				*/
 				
 				int generationNumber = 0;
 				
-				while((population.getChromosomes()[0].getFitness() < GeneticAlgorithm.TARGET_CHROMOSOME.length) && generationNumber < MAXIMUM_NUMBER_OF_GENERATIONS) {
-					
+				//System.out.println("PRINT PRIJE WHILE-a");
+				//while((population.getChromosomes()[0].getFitness() < GeneticAlgorithm.TARGET_CHROMOSOME.length) && generationNumber < MAXIMUM_NUMBER_OF_GENERATIONS) {
+				while(generationNumber < MAXIMUM_NUMBER_OF_GENERATIONS) {	
 					generationNumber++;
-					population = geneticAlgorithm.evolve(population);
+					System.out.println("-------------------------------------------------------------------------------------------------------");
+					System.out.println("Gen. num.: " + generationNumber);
+					
+					//System.out.println("Evolving population START");
+					population = geneticAlgorithm.evolve(population, trainData, testData);
+					
+					//System.out.println("Sorting population by fitness");
 					population.sortChromosomesByFitness();
-					//TODO implementirati naive bayes za svaki kromosom te populacije. Dobiti ću listu naive bayes modela, nakon x iteracija imati ćemo model
-					// bayesa sa najboljom predikcijom, s kojim ćemo onda testirati 3.1 dataset.
-					Instances dataWithoutLastColumn = FileHandler.getDataWithoutLastColumn(inputTrain.getData());
-					Instances TrainData = FileHandler.mergeDataWithLastColumn(dataWithoutLastColumn, population.getChromosomes()[0]);
-					TrainData.setClassIndex(TrainData.numAttributes() - 1);
-					
-					Instances TestData = inputTrain.getData();
-					Instances PredictionData = inputTest.getData(); // ovo je cijeli test dataset, podaci i zadnji stupac
-					
-					// Naive Bayes, trening sa datasetom koji se nalazi u mergedData.
-					//NaiveBayes naiveBayes = new NaiveBayes();
-					try {
-						// PROBA START
-						NaiveBayesModel naiveB = new NaiveBayesModel(TrainData, TestData, PredictionData);
-						naiveB.process();
-						// PROBA END
-						/*
-						naiveBayes.buildClassifier(TrainData);
-						Evaluation eval = new Evaluation(TrainData);
-						eval.crossValidateModel(naiveBayes, TrainData, 5, new Random(1));
-						
-						System.out.println(eval.toSummaryString("\nResults:\n", true));
-						textCalculation.append(eval.toSummaryString("\nResults:\n", true));
-						System.out.println("F-measure: " + eval.fMeasure(1) + ", Precision: " + eval.precision(1) + ", Recall: " + eval.recall(1));
-						textCalculation.append("F-measure: " + eval.fMeasure(1) + "\nPrecision: " + eval.precision(1) + "\nRecall: " + eval.recall(1) + "\n\n");
-						*/
-					} catch (Exception e1) {
-						
-						e1.printStackTrace();
-					}
-					//
+					/*
 					System.out.println("Generation # " + generationNumber + " | Fittest chromosome fitness: " + population.getChromosomes()[0].getFitness());
 					textCalculation.append("Generation # " + generationNumber + " | Fittest chromosome fitness: " + population.getChromosomes()[0].getFitness() + "\n");
 					textOutput = printPopulation(population, "Target Chromosome: " + Arrays.toString(GeneticAlgorithm.TARGET_CHROMOSOME));
 					textCalculation.append(textOutput);
+					*/
+				}
+				System.out.println("\nChromosome fitness from last generation:");
+				for (int i = 0; i < GeneticAlgorithm.POPULATION_SIZE; i++  ){
+					
+					System.out.println(population.getChromosomes()[i].getFitness());
+				}
+				
+				//System.out.println("Testing the best model after genetic selection");
+				NaiveBayesModel bestModel = population.getChromosomes()[0].getNaiveB();
+				Evaluation evaluation;
+				
+				try {
+					//System.out.println("Evaluation of the best model after genetic selection");
+					evaluation = new Evaluation(predictionData);
+					evaluation.evaluateModel(bestModel.getNaiveBayes(), predictionData);
+					System.out.println("\nBest Model Statistics: " + evaluation.toSummaryString());
+				} catch (Exception e1) {
+					e1.printStackTrace();
 				}
 			}
 		});
@@ -203,7 +211,7 @@ public class MainApp {
 		textScoring = new Text(shlApp, SWT.BORDER | SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
 		textScoring.setBounds(877, 10, 700, 820);
 	}
-	
+	/*
 	public static String printPopulation(Population population, String heading) { 
 		
 		String outputText = "";
@@ -224,4 +232,5 @@ public class MainApp {
 		
 		return outputText;
 	}
+	*/
 }

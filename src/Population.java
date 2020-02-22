@@ -1,5 +1,7 @@
 import java.util.Arrays;
 
+import weka.core.Instances;
+
 public class Population {
 	
 	private Chromosome[] chromosomes;
@@ -17,9 +19,7 @@ public class Population {
 		for(int x = 0; x < chromosomes.length; x++) {
 			chromosomes[x] = new Chromosome(GeneticAlgorithm.TARGET_CHROMOSOME.length).initializeChromosome();
 		}
-		
-		sortChromosomesByFitness();
-		
+				
 		return this;
 	}
 	
@@ -27,6 +27,15 @@ public class Population {
 	public Chromosome[] getChromosomes() {
 		
 		return chromosomes;
+	}
+	
+	public void computeFitness(Instances trainData, Instances testData) {
+		
+		for(int x = 0; x < chromosomes.length; x++) {
+			//System.out.println(chromosomes[x]);
+			trainData = FileHandler.mergeDataWithLastColumn(trainData, chromosomes[x]);
+			chromosomes[x].setFitness(trainData,  testData);
+		}
 	}
 	
 	public void sortChromosomesByFitness() {
