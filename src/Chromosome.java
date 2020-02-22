@@ -20,12 +20,14 @@ public class Chromosome {
 			if(Math.random() >= 0.5) genes[x] = 1;
 			else genes[x] = 0;
 		}
+		
 		return this;
 	}
 	
 	public int[] getGenes() {
 		
 		isFitnessChanged = true;
+		
 		return genes;
 	}
 	
@@ -35,6 +37,7 @@ public class Chromosome {
 			fitness = recalculateFitness();
 			isFitnessChanged = false;
 		}
+		
 		return fitness;
 	}
 	
@@ -42,11 +45,13 @@ public class Chromosome {
 	public int recalculateFitness() {
 		
 		int chromosomeFitness = 0;
+		
 		for(int x = 0; x < genes.length; x++) {
 			//if(genes[x] == GeneticAlgorithm.TARGET_CHROMOSOME[x]) chromosomeFitness++;
 			if(genes[x] == GeneticAlgorithm.TARGET_CHROMOSOME[x]) chromosomeFitness++;
 
 		}
+		
 		return chromosomeFitness;
 	}
 	

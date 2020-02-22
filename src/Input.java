@@ -42,6 +42,7 @@ public class Input {
 	}
 	
 	public Instances getData() {
+		
 		return new_data;
 	}
 }

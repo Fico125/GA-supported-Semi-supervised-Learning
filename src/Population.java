@@ -17,7 +17,9 @@ public class Population {
 		for(int x = 0; x < chromosomes.length; x++) {
 			chromosomes[x] = new Chromosome(GeneticAlgorithm.TARGET_CHROMOSOME.length).initializeChromosome();
 		}
+		
 		sortChromosomesByFitness();
+		
 		return this;
 	}
 	

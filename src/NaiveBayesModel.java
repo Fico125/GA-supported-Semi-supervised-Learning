@@ -9,6 +9,7 @@ public class NaiveBayesModel {
 	private static Instances predictionDataSet; // TODO Provjeriti da li bi ovo trebao biti CIJELI training dataset, odnosno podaci od atributa + zadnji stupac?
 	
 	public NaiveBayesModel(Instances trainingDataSet, Instances testingDataSet, Instances predictionDataSet) {
+		
 		super();
 		NaiveBayesModel.trainingDataSet = trainingDataSet;
 		NaiveBayesModel.testingDataSet = testingDataSet;
