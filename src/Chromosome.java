@@ -9,8 +9,7 @@ public class Chromosome {
 	private int[] genes;
 	private NaiveBayesModel naiveB;
 
-	/** Chromosome represents a candidate soludion made of N genes.
-	 * @param length size for an array of genes. */
+	/** Chromosome represents a candidate soludion made of N genes. */
 	public Chromosome(int length) {
 		
 		genes = new int[length];
@@ -20,6 +19,7 @@ public class Chromosome {
 	public Chromosome initializeChromosome() {
 		
 		for(int x = 0; x < genes.length; x++) {
+			
 			if(Math.random() >= 0.5) genes[x] = 1;
 			else genes[x] = 0;
 		}
@@ -31,7 +31,9 @@ public class Chromosome {
 	private double recalculateFitness(Instances trainData, Instances testData) {
 		
 		double chromosomeFitness = 0.0;
+		
 		try {
+			
 			naiveB = new NaiveBayesModel(trainData, testData);
 			naiveB.process();
 			

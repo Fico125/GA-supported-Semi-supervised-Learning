@@ -20,16 +20,12 @@ import weka.core.Instances;
 public class MainApp {
 	
 	public static final int MAXIMUM_NUMBER_OF_GENERATIONS = 50;
-	
 	protected Shell shlApp;
-	private Text textCalculation;
-	private Text textScoring;
-	private Button btnClose;
-	
 
 	public static void main(String[] args) throws IOException{
 		
 		try {
+			
 			MainApp window = new MainApp();
 			window.openWindow();
 			
@@ -46,6 +42,7 @@ public class MainApp {
 		shlApp.layout();
 		
 		while(!shlApp.isDisposed()) {
+			
 			if(display.readAndDispatch()) {
 				display.sleep();
 			}
@@ -59,9 +56,30 @@ public class MainApp {
 		shlApp.setMaximized(true);
 		shlApp.setText("Genetic Algorithm supported Semi-supervised Learning");
 		
+		Text textCalculation = new Text(shlApp, SWT.BORDER | SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+		textCalculation.setBounds(177, 10, 700, 820);
+		
+		Text textScoring = new Text(shlApp, SWT.BORDER | SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+		textScoring.setBounds(877, 10, 700, 820);
+		
 		Input inputTrain = new Input();
 		Input inputTest = new Input();
-
+		
+		Button btnClose = new Button(shlApp, SWT.NONE);
+		btnClose.setBounds(0, 170, 134, 28);
+		btnClose.setText("Close");
+		
+		btnClose.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				try {
+					System.exit(0);
+					
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
 		
 		Button btnUcitajTrain = new Button(shlApp, SWT.NONE);
 		btnUcitajTrain.setBounds(0, 9, 134, 28);
@@ -76,6 +94,7 @@ public class MainApp {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				try {
+					
 					FileDialog fileDialog = new FileDialog(shlApp, SWT.MULTI);
 					@SuppressWarnings("unused")
 					String firstFile = fileDialog.open(); // if SupressWarnings is moved, this is "unused", but fileDialog wont open without it.
@@ -103,6 +122,7 @@ public class MainApp {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				try {
+					
 					FileDialog fileDialog = new FileDialog(shlApp, SWT.MULTI);
 					@SuppressWarnings("unused")
 					String firstFile = fileDialog.open(); // if SupressWarnings is moved, this is "unused", but fileDialog wont open without it.
@@ -144,20 +164,11 @@ public class MainApp {
 				Instances testData = inputTest.getData();
 				Instances predictionData = inputTrain.getData(); // ovo je cijeli test dataset, podaci i zadnji stupac
 				population.computeFitness(trainData, testData);
-				//String textOutput = "";
-
-				/*
-				System.out.println("-------------------------------------------------------------------------------------------------------");
-				textCalculation.append("-------------------------------------------------------------------------------------------------------\n");
-				System.out.println("Generation # 0" + " | Fittest chromosome fitness: " + population.getChromosomes()[0].getFitness());
-				textCalculation.append("Generation # 0" + " | Fittest chromosome fitness: " + population.getChromosomes()[0].getFitness() + "\n");
-				textOutput = printPopulation(population, "Target Chromosome: " + Arrays.toString(GeneticAlgorithm.TARGET_CHROMOSOME));
-				textCalculation.append(textOutput);
-				*/
 				
 				int generationNumber = 0;
 				
 				while(generationNumber < MAXIMUM_NUMBER_OF_GENERATIONS) {	
+					
 					generationNumber++;
 					System.out.println("-------------------------------------------------------------------------------------------------------");
 					System.out.println("Gen. num.: " + generationNumber);
@@ -166,23 +177,23 @@ public class MainApp {
 					population = geneticAlgorithm.evolve(population, trainData, testData);
 					
 					population.sortChromosomesByFitness();
-					double fittestChromosome = geneticAlgorithm.getFittnessOfTheFittestChromosomeFromTheGeneration();
+					double fittestChromosome = geneticAlgorithm.getFitnessOfTheFittestChromosomeFromGeneration();
 					textCalculation.append("Fittness of the fittest chromosome: " + String.valueOf(fittestChromosome) + "\n");
-					/*
-					System.out.println("Generation # " + generationNumber + " | Fittest chromosome fitness: " + population.getChromosomes()[0].getFitness());
-					textCalculation.append("Generation # " + generationNumber + " | Fittest chromosome fitness: " + population.getChromosomes()[0].getFitness() + "\n");
-					textOutput = printPopulation(population, "Target Chromosome: " + Arrays.toString(GeneticAlgorithm.TARGET_CHROMOSOME));
-					textCalculation.append(textOutput);
-					*/
+					if(fittestChromosome == 1.0) {
+						break;
+					}
 				}
+				
 				System.out.println("\nChromosome fitness from last generation:");
 				textCalculation.append("\nChromosome fitness from last generation:\n");
+				
 				for (int i = 0; i < GeneticAlgorithm.POPULATION_SIZE; i++  ){
 					
 					System.out.println(population.getChromosomes()[i].getFitness());
 					textCalculation.append("Chromosome #" + i + ": " + String.valueOf(population.getChromosomes()[i].getFitness()) + "\n");
 				}
 				
+				System.out.println("\nChromosomes from last generation:\n");
 				textCalculation.append("\nChromosomes from last generation:\n");
 				for (int i = 0; i < GeneticAlgorithm.POPULATION_SIZE; i++  ){
 					
@@ -190,12 +201,11 @@ public class MainApp {
 					textCalculation.append("Chromosome #" + i + ": " + population.getChromosomes()[i] + "\n");
 				}
 				
-				//System.out.println("Testing the best model after genetic selection");
 				NaiveBayesModel bestModel = population.getChromosomes()[0].getNaiveB();
 				Evaluation evaluation;
 				
 				try {
-					//System.out.println("Evaluation of the best model after genetic selection");
+					
 					evaluation = new Evaluation(predictionData);
 					evaluation.evaluateModel(bestModel.getNaiveBayes(), predictionData);
 					System.out.println("\nBest Model Statistics: " + evaluation.toSummaryString());
@@ -216,50 +226,6 @@ public class MainApp {
 					e1.printStackTrace();
 				}
 			}
-		});
-		
-		btnClose = new Button(shlApp, SWT.NONE);
-		btnClose.setBounds(0, 170, 134, 28);
-		btnClose.setText("Close");
-		
-		btnClose.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				try {
-					System.exit(0);
-					
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
-			}
-		});
-		
-		textCalculation = new Text(shlApp, SWT.BORDER | SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
-		textCalculation.setBounds(177, 10, 700, 820);
-		
-		textScoring = new Text(shlApp, SWT.BORDER | SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
-		textScoring.setBounds(877, 10, 700, 820);
+		});		
 	}
-	/*
-	public static String printPopulation(Population population, String heading) { 
-		
-		String outputText = "";
-		
-		System.out.println(heading);
-		outputText = heading + "\n";
-		//System.out.println("--------------------------------------------");
-		//outputText += "--------------------------------------------\n";
-		for(int x = 0; x < population.getChromosomes().length; x++) {
-			System.out.println("Chromosome # " + x + " : " + Arrays.toString(population.getChromosomes()[x].getGenes()) + 
-					" | Fitness: " + population.getChromosomes()[x].getFitness());
-			outputText += "Chromosome # " + x + " : " + Arrays.toString(population.getChromosomes()[x].getGenes()) + 
-					" | Fitness: " + population.getChromosomes()[x].getFitness() + "\n";
-		}
-		System.out.println("-------------------------------------------------------------------------------------------------------");
-		outputText += "-------------------------------------------------------------------------------------------------------\n";
-		outputText += "\n";
-		
-		return outputText;
-	}
-	*/
 }

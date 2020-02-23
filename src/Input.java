@@ -14,6 +14,7 @@ public class Input {
 		String fullFilePath = filepath + "/" + filename;
 		
 		try {
+			
 			CSVLoader loader = new CSVLoader();
 			loader.setSource(new File(fullFilePath));
 			data = loader.getDataSet();
@@ -34,7 +35,6 @@ public class Input {
 	  		  }
 	  	  }
 	  	  	
-	  	  // setting class attribute
 	  	  data.setClassIndex(data.numAttributes() - 1);
 	  	  	
 	  	  new_data = FileHandler.numericToNominal(data);

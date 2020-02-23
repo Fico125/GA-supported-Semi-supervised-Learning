@@ -6,8 +6,7 @@ public class Population {
 	
 	private Chromosome[] chromosomes;
 
-	/** Population represents a population of chromosomes.
-	 * @param length size of the population. */
+	/** Population represents a population of chromosomes. */
 	public Population(int length) {
 		
 		chromosomes = new Chromosome[length];
@@ -17,6 +16,7 @@ public class Population {
 	public Population initializePopulation() {
 		
 		for(int x = 0; x < chromosomes.length; x++) {
+			
 			chromosomes[x] = new Chromosome(GeneticAlgorithm.TARGET_CHROMOSOME.length).initializeChromosome();
 		}
 				
@@ -26,6 +26,7 @@ public class Population {
 	public void computeFitness(Instances trainData, Instances testData) {
 		
 		for(int x = 0; x < chromosomes.length; x++) {
+			
 			//System.out.println(chromosomes[x]);
 			trainData = FileHandler.mergeDataWithLastColumn(trainData, chromosomes[x]);
 			chromosomes[x].setFitness(trainData,  testData);

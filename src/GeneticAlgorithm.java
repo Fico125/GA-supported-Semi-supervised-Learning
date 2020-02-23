@@ -4,12 +4,12 @@ import weka.core.Instances;
  * */
 public class GeneticAlgorithm {
 
-	public static final int POPULATION_SIZE = 100; // Number of chromosomes in a population.
+	public static final int POPULATION_SIZE = 50; // Number of chromosomes in a population.
 	public static int[] TARGET_CHROMOSOME; // Used to extract the length of the given dataset.
-	public static final double MUTATION_RATE = 0.10; // Probability that a chromosome gene will be selected for random mutation.
-	public static final int NUMB_OF_ELITE_CHROMOSOMES = 5; // Chromosomes that will not be subjected to crossover or mutation.
-	public static final int TOURNAMENT_SELECTION_SIZE = 20; // Tournament population size, used for chromosome crossover selection.
-	private double fittnessOfTheFittestChromosomeFromTheGeneration;
+	public static final double MUTATION_RATE = 0.075; // Probability that a chromosome gene will be selected for random mutation.
+	public static final int NUMB_OF_ELITE_CHROMOSOMES = 2; // Chromosomes that will not be subjected to crossover or mutation.
+	public static final int TOURNAMENT_SELECTION_SIZE = 50; // Tournament population size, used for chromosome crossover selection.
+	private double fitnessOfTheFittestChromosomeFromGeneration;
 
 	public GeneticAlgorithm(Instances data) {
 		
@@ -29,8 +29,8 @@ public class GeneticAlgorithm {
 		
 		System.out.println("Mutate population");
 		Population mutatePopulation = new Population(population.getChromosomes().length);
-		// Excluding elite chromosomes from mutation.
 		
+		// Excluding elite chromosomes from mutation.
 		for(int x = 0; x < NUMB_OF_ELITE_CHROMOSOMES; x++) {
 			
 			mutatePopulation.getChromosomes()[x] = population.getChromosomes()[x];
@@ -41,6 +41,7 @@ public class GeneticAlgorithm {
 			
 			mutatePopulation.getChromosomes()[x] = mutateChromosome(population.getChromosomes()[x]);
 		}
+		
 		mutatePopulation.computeFitness(trainData, testData);
 		return mutatePopulation;
 	}
@@ -66,7 +67,8 @@ public class GeneticAlgorithm {
 			Chromosome chromosome2 = selectTournamentPopulation(population, trainData, testData).getChromosomes()[0];
 			crossoverPopulation.getChromosomes()[x] = crossoverChromosome(chromosome1, chromosome2);
 		}
-		fittnessOfTheFittestChromosomeFromTheGeneration = crossoverPopulation.getChromosomes()[0].getFitness();
+		
+		fitnessOfTheFittestChromosomeFromGeneration = crossoverPopulation.getChromosomes()[0].getFitness();
 		
 		return crossoverPopulation;
 	}
@@ -81,8 +83,6 @@ public class GeneticAlgorithm {
 			tournamentPopulation.getChromosomes()[x] = population.getChromosomes()[(int)(Math.random()*population.getChromosomes().length)];
 		}
 		
-		//System.out.println("computing fitness");
-		//tournamentPopulation.computeFitness(trainData, testData, predictionData);
 		tournamentPopulation.sortChromosomesByFitness();
 		
 		return tournamentPopulation;
@@ -110,6 +110,7 @@ public class GeneticAlgorithm {
 		for(int x = 0; x < chromosome.getGenes().length; x++) {
 			
 			if(Math.random() < MUTATION_RATE) {
+				
 				if(Math.random() < 0.5) mutateChromosome.getGenes()[x] = 1;
 				else mutateChromosome.getGenes()[x] = 0;
 			}
@@ -119,8 +120,8 @@ public class GeneticAlgorithm {
 		return mutateChromosome;
 	}
 	
-	public double getFittnessOfTheFittestChromosomeFromTheGeneration() {
+	public double getFitnessOfTheFittestChromosomeFromGeneration() {
 		
-		return fittnessOfTheFittestChromosomeFromTheGeneration;
+		return fitnessOfTheFittestChromosomeFromGeneration;
 	}
 }
