@@ -19,13 +19,12 @@ public class FileHandler {
         options[0] = "-R";
         options[1] = "last";
 
-        try
-        {
+        try {
+        	
             convert.setOptions(options);
             convert.setInputFormat(instance);
             newInstance = Filter.useFilter(instance, convert);
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -39,6 +38,7 @@ public class FileHandler {
     	int[] lastColumnValues = new int[data.numInstances()];
     	
     	for(int i = 0; i < data.numInstances(); i++) {
+    		
 	  		Instance currentInstance = data.instance(i);
 	  		lastColumnValues[i] = Integer.parseInt(currentInstance.toString(lastColumnIndex));
     	}
@@ -51,10 +51,12 @@ public class FileHandler {
     	
     	Instances new_data = null;
     	int[] lastColumnIndex = {data.numAttributes() - 1};
-    	
     	Remove removeFilter = new Remove();
+    	
     	removeFilter.setAttributeIndicesArray(lastColumnIndex);
+    	
     	try {
+    		
 			removeFilter.setInputFormat(data);
 	    	new_data = Filter.useFilter(data, removeFilter);
 		} catch (Exception e) {
@@ -72,10 +74,10 @@ public class FileHandler {
     	int[] lastColumnValues;
     	
     	new_data = new Instances(data);
-
     	lastColumnValues = lastColumn.getGenes();
 
         try {
+        	
         	Add filter;
         	filter = new Add();
         	filter.setAttributeIndex("last");
@@ -88,6 +90,7 @@ public class FileHandler {
         
         int brojZadnjegStupca = new_data.numAttributes() - 1;
         for(int i = 0; i < new_data.numInstances(); i++) {
+        	
 	  		  Instance currentInstance = new_data.instance(i);
 	  		  currentInstance.setValue(brojZadnjegStupca, lastColumnValues[i]);
         }

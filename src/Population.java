@@ -23,12 +23,6 @@ public class Population {
 		return this;
 	}
 	
-
-	public Chromosome[] getChromosomes() {
-		
-		return chromosomes;
-	}
-	
 	public void computeFitness(Instances trainData, Instances testData) {
 		
 		for(int x = 0; x < chromosomes.length; x++) {
@@ -46,5 +40,10 @@ public class Population {
 			else if(chromosome1.getFitness() < chromosome2.getFitness()) flag = 1;
 			return flag;
 		});
+	}
+	
+	public Chromosome[] getChromosomes() {
+		
+		return chromosomes;
 	}
 }

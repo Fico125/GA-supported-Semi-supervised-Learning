@@ -6,18 +6,9 @@ public class NaiveBayesModel {
 
 	private static Instances trainingDataSet; // Sastoji se od training dataseta bez zadnjeg stupca + bitstringa generiranog genetskim algoritmom
 	private static Instances testingDataSet;
-	
-	private NaiveBayes naiveBayes;// = new NaiveBayes();
-	public NaiveBayes getNaiveBayes() {
-		return naiveBayes;
-	}
-
-	Evaluation evaluation;// = new Evaluation(trainingDataSet);
-
-	public Evaluation getEvaluation() {
-		
-		return evaluation;
-	}
+	private NaiveBayes naiveBayes;
+	private String resultText = "";
+	private Evaluation evaluation;
 
 	public NaiveBayesModel(Instances trainingDataSet, Instances testingDataSet) throws Exception {
 		
@@ -35,8 +26,24 @@ public class NaiveBayesModel {
 		
 		//evaluation.crossValidateModel(naiveBayes, trainingDataSet, 5, new Random(1));
 		evaluation.evaluateModel(naiveBayes, testingDataSet);
-		
+		resultText += evaluation.toSummaryString();
 		//System.out.println("Model summary: " + evaluation.toSummaryString());
+	}
+	
+	public String getResultText() {
+
+		return resultText.toString();
+	}
+
+	public NaiveBayes getNaiveBayes() {
+		
+		return naiveBayes;
+	}
+
+
+	public Evaluation getEvaluation() {
+		
+		return evaluation;
 	}
 	
 }

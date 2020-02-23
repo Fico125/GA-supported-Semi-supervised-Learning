@@ -5,14 +5,9 @@ import weka.core.Instances;
 
 public class Chromosome {
 
-	private boolean isFitnessChanged = true; // Used to check if fitness of a chromsome has changed,and if so trigger the recalculation of fitness. 
 	private double fitness = 0.0; // Representing the fitness of a chromosome.
 	private int[] genes;
 	private NaiveBayesModel naiveB;
-	
-	public NaiveBayesModel getNaiveB() {
-		return naiveB;
-	}
 
 	/** Chromosome represents a candidate soludion made of N genes.
 	 * @param length size for an array of genes. */
@@ -32,30 +27,16 @@ public class Chromosome {
 		return this;
 	}
 	
-	public int[] getGenes() {
-		
-		isFitnessChanged = true;
-		
-		return genes;
-	}
-	
-	public double getFitness() {	
-		return fitness;
-	}
-	
 	/** Method for calculating fitness of a chromosome by comparing it with the target chromosome. */
 	private double recalculateFitness(Instances trainData, Instances testData) {
-		// ovdje bi trebao trenirati, testirati i evaluirati model.
 		
 		double chromosomeFitness = 0.0;
 		try {
-			//System.out.println("Naive Bayes training START");
 			naiveB = new NaiveBayesModel(trainData, testData);
 			naiveB.process();
 			
 			Evaluation evaluation = naiveB.getEvaluation();
 			chromosomeFitness = evaluation.precision(1);
-			//chromosomeFitness = chromosomeFitness * chromosomeFitness;
 			System.out.println("Chromosome fitness: (precision)" + chromosomeFitness);
 			
 		} catch (Exception e1) {
@@ -65,13 +46,29 @@ public class Chromosome {
 		
 		return chromosomeFitness;
 	}
+
+	public void setFitness(Instances trainData, Instances testData) {
+		
+		fitness = recalculateFitness(trainData, testData);
+	}
+	
+	public NaiveBayesModel getNaiveB() {
+		
+		return naiveB;
+	}
+	
+	public int[] getGenes() {
+		
+		return genes;
+	}
+	
+	public double getFitness() {	
+		
+		return fitness;
+	}
 	
 	public String toString() {
 		
 		return Arrays.toString(this.genes);
-	}
-
-	public void setFitness(Instances trainData, Instances testData) {
-		fitness = recalculateFitness(trainData, testData);
 	}
 }

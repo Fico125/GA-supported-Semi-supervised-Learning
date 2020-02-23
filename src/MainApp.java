@@ -16,6 +16,7 @@ import weka.classifiers.bayes.NaiveBayes;
 import weka.core.Instances;
 /** Class containing main method.
  * */
+@SuppressWarnings("unused")
 public class MainApp {
 	
 	public static final int MAXIMUM_NUMBER_OF_GENERATIONS = 50;
@@ -64,11 +65,11 @@ public class MainApp {
 		
 		Button btnUcitajTrain = new Button(shlApp, SWT.NONE);
 		btnUcitajTrain.setBounds(0, 9, 134, 28);
-		btnUcitajTrain.setText("Dodaj datoteku (Train)");
+		btnUcitajTrain.setText("Add file (Train)");
 
 		Button btnDatotekaSpremna = new Button(shlApp, SWT.CHECK);
 		btnDatotekaSpremna.setBounds(10, 43, 124, 18);
-		btnDatotekaSpremna.setText("Datoteka spremna");
+		btnDatotekaSpremna.setText("File ready");
 		btnDatotekaSpremna.setEnabled(false);
 		
 		btnUcitajTrain.addSelectionListener(new SelectionAdapter() {
@@ -91,11 +92,11 @@ public class MainApp {
 		
 		Button btnUcitajTest = new Button(shlApp, SWT.NONE);
 		btnUcitajTest.setBounds(0, 67, 134, 28);
-		btnUcitajTest.setText("Dodaj datoteku (Test)");
+		btnUcitajTest.setText("Add file (Test)");
 
 		Button btnDatotekaTestSpremna = new Button(shlApp, SWT.CHECK);
 		btnDatotekaTestSpremna.setBounds(10, 101, 124, 18);
-		btnDatotekaTestSpremna.setText("Datoteka spremna");
+		btnDatotekaTestSpremna.setText("File ready");
 		btnDatotekaTestSpremna.setEnabled(false);
 		
 		btnUcitajTest.addSelectionListener(new SelectionAdapter() {
@@ -118,25 +119,32 @@ public class MainApp {
 		
 		Button btnIzracunaj = new Button(shlApp, SWT.NONE);
 		btnIzracunaj.setBounds(0, 135, 134, 28);
-		btnIzracunaj.setText("Izracunaj");
+		btnIzracunaj.setText("Start");
 		
 		btnIzracunaj.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				//System.out.println("INICIJALIZACIJA GENETSKOG ALGORITMA");				
-				GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(inputTrain.getData());
 				
-				//System.out.println("INICIJALIZACIJA POPULACIJE");
+				GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(inputTrain.getData());
+
+				textCalculation.append("Dataset length: " + GeneticAlgorithm.TARGET_CHROMOSOME.length + "\n");
+				textCalculation.append("Number of generations: " + MAXIMUM_NUMBER_OF_GENERATIONS + "\n");
+				textCalculation.append("Population size: " + GeneticAlgorithm.POPULATION_SIZE + "\n");
+				textCalculation.append("Mutation rate: " + GeneticAlgorithm.MUTATION_RATE + "\n");
+				textCalculation.append("Number of elite chromosomes: " + GeneticAlgorithm.NUMB_OF_ELITE_CHROMOSOMES + "\n");
+				textCalculation.append("Tournament selection size: " + GeneticAlgorithm.TOURNAMENT_SELECTION_SIZE + "\n");
+				
 				Population population = new Population(GeneticAlgorithm.POPULATION_SIZE).initializePopulation();
 				Instances dataWithoutLastColumn = FileHandler.getDataWithoutLastColumn(inputTrain.getData());
-				//Instances trainData = FileHandler.mergeDataWithLastColumn(dataWithoutLastColumn, population.getChromosomes()[0]);
 				Instances trainData = dataWithoutLastColumn; // trainData spajamo sa posljednjim stupcem (GA outputom) prilikom izračunavanja fitnessa u metodi computeFitness
 				trainData.setClassIndex(trainData.numAttributes() - 1);
+				textCalculation.append("Number of attributes in a dataset: " + trainData.numAttributes() + "\n");
+
 				
 				Instances testData = inputTest.getData();
 				Instances predictionData = inputTrain.getData(); // ovo je cijeli test dataset, podaci i zadnji stupac
 				population.computeFitness(trainData, testData);
-				String textOutput = "";
+				//String textOutput = "";
 
 				/*
 				System.out.println("-------------------------------------------------------------------------------------------------------");
@@ -149,18 +157,17 @@ public class MainApp {
 				
 				int generationNumber = 0;
 				
-				//System.out.println("PRINT PRIJE WHILE-a");
-				//while((population.getChromosomes()[0].getFitness() < GeneticAlgorithm.TARGET_CHROMOSOME.length) && generationNumber < MAXIMUM_NUMBER_OF_GENERATIONS) {
 				while(generationNumber < MAXIMUM_NUMBER_OF_GENERATIONS) {	
 					generationNumber++;
 					System.out.println("-------------------------------------------------------------------------------------------------------");
 					System.out.println("Gen. num.: " + generationNumber);
+					textCalculation.append("\nGeneration number: " + generationNumber + "\n");
 					
-					//System.out.println("Evolving population START");
 					population = geneticAlgorithm.evolve(population, trainData, testData);
 					
-					//System.out.println("Sorting population by fitness");
 					population.sortChromosomesByFitness();
+					double fittestChromosome = geneticAlgorithm.getFittnessOfTheFittestChromosomeFromTheGeneration();
+					textCalculation.append("Fittness of the fittest chromosome: " + String.valueOf(fittestChromosome) + "\n");
 					/*
 					System.out.println("Generation # " + generationNumber + " | Fittest chromosome fitness: " + population.getChromosomes()[0].getFitness());
 					textCalculation.append("Generation # " + generationNumber + " | Fittest chromosome fitness: " + population.getChromosomes()[0].getFitness() + "\n");
@@ -169,9 +176,18 @@ public class MainApp {
 					*/
 				}
 				System.out.println("\nChromosome fitness from last generation:");
+				textCalculation.append("\nChromosome fitness from last generation:\n");
 				for (int i = 0; i < GeneticAlgorithm.POPULATION_SIZE; i++  ){
 					
 					System.out.println(population.getChromosomes()[i].getFitness());
+					textCalculation.append("Chromosome #" + i + ": " + String.valueOf(population.getChromosomes()[i].getFitness()) + "\n");
+				}
+				
+				textCalculation.append("\nChromosomes from last generation:\n");
+				for (int i = 0; i < GeneticAlgorithm.POPULATION_SIZE; i++  ){
+					
+					System.out.println(population.getChromosomes()[i]);
+					textCalculation.append("Chromosome #" + i + ": " + population.getChromosomes()[i] + "\n");
 				}
 				
 				//System.out.println("Testing the best model after genetic selection");
@@ -183,6 +199,19 @@ public class MainApp {
 					evaluation = new Evaluation(predictionData);
 					evaluation.evaluateModel(bestModel.getNaiveBayes(), predictionData);
 					System.out.println("\nBest Model Statistics: " + evaluation.toSummaryString());
+					textScoring.append("Best Model Statistics: \n" + evaluation.toSummaryString());
+					textScoring.append("Area under ROC \t\t\t" + evaluation.areaUnderROC(1) + "\n");
+					textScoring.append("Error rate \t\t\t" + evaluation.errorRate() + "\n");
+					textScoring.append("F-measure \t\t\t" + evaluation.fMeasure(1) + "\n");
+					textScoring.append("Precision \t\t\t" + evaluation.precision(1) + "\n");
+					textScoring.append("Recall \t\t\t" + evaluation.recall(1) + "\n");
+					textScoring.append("Matthews Correlation Coefficient \t\t\t" + evaluation.matthewsCorrelationCoefficient(1) + "\n");
+					textScoring.append("Confusion Matrix \n" + 
+					"TP: " + evaluation.confusionMatrix()[0][0] + "\t" + 
+					"   FN: " + evaluation.confusionMatrix()[0][1] + "\n" + 
+					"FP: " + evaluation.confusionMatrix()[1][0] + "\t" + 
+					"   TN: " + evaluation.confusionMatrix()[1][1] + "\n" + "\n");
+
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
@@ -191,7 +220,7 @@ public class MainApp {
 		
 		btnClose = new Button(shlApp, SWT.NONE);
 		btnClose.setBounds(0, 170, 134, 28);
-		btnClose.setText("Zatvori");
+		btnClose.setText("Close");
 		
 		btnClose.addSelectionListener(new SelectionAdapter() {
 			@Override
