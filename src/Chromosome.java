@@ -53,10 +53,11 @@ public class Chromosome {
 			naiveB = new NaiveBayesModel(trainData, testData);
 			naiveB.process();
 			
-			// TODO PROVJERITI:mislim da cijeli ovaj ostatak koda može ići u metodu process() koju pozivamo 2 linije iznad?
 			Evaluation evaluation = naiveB.getEvaluation();
 			chromosomeFitness = evaluation.precision(1);
+			//chromosomeFitness = chromosomeFitness * chromosomeFitness;
 			System.out.println("Chromosome fitness: (precision)" + chromosomeFitness);
+			
 		} catch (Exception e1) {
 			
 			e1.printStackTrace();

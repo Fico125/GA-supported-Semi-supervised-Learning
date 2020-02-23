@@ -4,11 +4,11 @@ import weka.core.Instances;
  * */
 public class GeneticAlgorithm {
 
-	public static final int POPULATION_SIZE = 20; // Number of chromosomes in a population.
+	public static final int POPULATION_SIZE = 100; // Number of chromosomes in a population.
 	public static int[] TARGET_CHROMOSOME; // Chromosome that we are trying to replicate with the genetic algorithm.
-	private static final double MUTATION_RATE = 0.075; // Probability that a chromosome gene will be selected for random mutation.
+	private static final double MUTATION_RATE = 0.10; // Probability that a chromosome gene will be selected for random mutation.
 	public static final int NUMB_OF_ELITE_CHROMOSOMES = 5; // Chromosomes that will not be subjected to crossover or mutation.
-	public static final int TOURNAMENT_SELECTION_SIZE = 10; // Tournament population size, used for chromosome crossover selection.
+	public static final int TOURNAMENT_SELECTION_SIZE = 20; // Tournament population size, used for chromosome crossover selection.
 
 	public GeneticAlgorithm(Instances data) {
 		

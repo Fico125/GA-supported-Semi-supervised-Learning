@@ -18,7 +18,7 @@ import weka.core.Instances;
  * */
 public class MainApp {
 	
-	public static final int MAXIMUM_NUMBER_OF_GENERATIONS = 100;
+	public static final int MAXIMUM_NUMBER_OF_GENERATIONS = 50;
 	
 	protected Shell shlApp;
 	private Text textCalculation;

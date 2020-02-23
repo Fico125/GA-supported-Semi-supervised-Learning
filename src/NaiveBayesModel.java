@@ -35,6 +35,7 @@ public class NaiveBayesModel {
 		
 		//evaluation.crossValidateModel(naiveBayes, trainingDataSet, 5, new Random(1));
 		evaluation.evaluateModel(naiveBayes, testingDataSet);
+		
 		//System.out.println("Model summary: " + evaluation.toSummaryString());
 	}
 	
