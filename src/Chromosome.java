@@ -8,6 +8,7 @@ public class Chromosome {
 	private double fitness = 0.0; // Representing the fitness of a chromosome.
 	private int[] genes;
 	private NaiveBayesModel naiveB;
+	private static String outputTextChromosome = "";
 
 	/** Chromosome represents a candidate soludion made of N genes. */
 	public Chromosome(int length) {
@@ -27,19 +28,24 @@ public class Chromosome {
 		return this;
 	}
 	
-	/** Method for calculating fitness of a chromosome by comparing it with the target chromosome. */
+	/** Method for calculating fitness of a chromosome by comparing it with the target chromosome. 
+	 * Chromosome fitness is actually precision (evaluation metric).It is set after training, testing
+	 * and evaluating the Naive Bayes model.*/
 	private double recalculateFitness(Instances trainData, Instances testData) {
 		
 		double chromosomeFitness = 0.0;
-		
 		try {
 			
 			naiveB = new NaiveBayesModel(trainData, testData);
 			naiveB.process();
 			
 			Evaluation evaluation = naiveB.getEvaluation();
+			outputTextChromosome += "\n************************************************************";
+			System.out.println("Model summary for chromosome: " + evaluation.toSummaryString());
+			outputTextChromosome += "\nModel summary for chromosome: " + naiveB.getResultText();
 			chromosomeFitness = evaluation.precision(1);
-			System.out.println("Chromosome fitness: (precision)" + chromosomeFitness);
+			System.out.println("Chromosome fitness (precision): " + chromosomeFitness);
+			outputTextChromosome += "Chromosome fitness (precision): " + chromosomeFitness;
 			
 		} catch (Exception e1) {
 			
@@ -54,7 +60,7 @@ public class Chromosome {
 		fitness = recalculateFitness(trainData, testData);
 	}
 	
-	public NaiveBayesModel getNaiveB() {
+	public NaiveBayesModel getNaiveBayesOfSelectedChromosome() {
 		
 		return naiveB;
 	}
@@ -72,5 +78,14 @@ public class Chromosome {
 	public String toString() {
 		
 		return Arrays.toString(this.genes);
+	}
+	
+	public static String getOutputTextChromosome() {
+		
+		return outputTextChromosome;
+	}
+	
+	public static void setOutputTextChromosome(String outputTextChromosome) {
+		Chromosome.outputTextChromosome = outputTextChromosome;
 	}
 }

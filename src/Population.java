@@ -24,11 +24,12 @@ public class Population {
 	}
 	
 	public void computeFitness(Instances trainData, Instances testData) {
-		
+				
 		for(int x = 0; x < chromosomes.length; x++) {
 			
 			//System.out.println(chromosomes[x]);
 			trainData = FileHandler.mergeDataWithLastColumn(trainData, chromosomes[x]);
+			System.out.println("Chromosome #" + x + ":\n");
 			chromosomes[x].setFitness(trainData,  testData);
 		}
 	}

@@ -96,7 +96,6 @@ public class MainApp {
 				try {
 					
 					FileDialog fileDialog = new FileDialog(shlApp, SWT.MULTI);
-					@SuppressWarnings("unused")
 					String firstFile = fileDialog.open(); // if SupressWarnings is moved, this is "unused", but fileDialog wont open without it.
 					String fileName = fileDialog.getFileName();
 					String filePath = fileDialog.getFilterPath();
@@ -124,7 +123,6 @@ public class MainApp {
 				try {
 					
 					FileDialog fileDialog = new FileDialog(shlApp, SWT.MULTI);
-					@SuppressWarnings("unused")
 					String firstFile = fileDialog.open(); // if SupressWarnings is moved, this is "unused", but fileDialog wont open without it.
 					String fileName = fileDialog.getFileName();
 					String filePath = fileDialog.getFilterPath();
@@ -157,9 +155,8 @@ public class MainApp {
 				Population population = new Population(GeneticAlgorithm.POPULATION_SIZE).initializePopulation();
 				Instances dataWithoutLastColumn = FileHandler.getDataWithoutLastColumn(inputTrain.getData());
 				Instances trainData = dataWithoutLastColumn; // trainData spajamo sa posljednjim stupcem (GA outputom) prilikom izračunavanja fitnessa u metodi computeFitness
-				trainData.setClassIndex(trainData.numAttributes() - 1);
+				//trainData.setClassIndex(trainData.numAttributes() - 1);
 				textCalculation.append("Number of attributes in a dataset: " + trainData.numAttributes() + "\n");
-
 				
 				Instances testData = inputTest.getData();
 				Instances predictionData = inputTrain.getData(); // ovo je cijeli test dataset, podaci i zadnji stupac
@@ -172,13 +169,20 @@ public class MainApp {
 					generationNumber++;
 					System.out.println("-------------------------------------------------------------------------------------------------------");
 					System.out.println("Gen. num.: " + generationNumber);
+					textCalculation.append("-------------------------------------------------------------------------------------------------------\n");
+					textCalculation.append("-------------------------------------------------------------------------------------------------------");
 					textCalculation.append("\nGeneration number: " + generationNumber + "\n");
 					
 					population = geneticAlgorithm.evolve(population, trainData, testData);
 					
 					population.sortChromosomesByFitness();
+					String ChromosomeBayesOutput = Chromosome.getOutputTextChromosome();
+					textCalculation.append(ChromosomeBayesOutput);
+					
 					double fittestChromosome = geneticAlgorithm.getFitnessOfTheFittestChromosomeFromGeneration();
-					textCalculation.append("Fittness of the fittest chromosome: " + String.valueOf(fittestChromosome) + "\n");
+					System.out.println("\n\nFittness of the fittest chromosome in this population: " + String.valueOf(fittestChromosome) + "\n");
+					textCalculation.append("\n\nFittness of the fittest chromosome in this population: " + String.valueOf(fittestChromosome) + "\n");
+					
 					if(fittestChromosome == 1.0) {
 						break;
 					}
@@ -193,15 +197,15 @@ public class MainApp {
 					textCalculation.append("Chromosome #" + i + ": " + String.valueOf(population.getChromosomes()[i].getFitness()) + "\n");
 				}
 				
-				System.out.println("\nChromosomes from last generation:\n");
-				textCalculation.append("\nChromosomes from last generation:\n");
-				for (int i = 0; i < GeneticAlgorithm.POPULATION_SIZE; i++  ){
-					
-					System.out.println(population.getChromosomes()[i]);
-					textCalculation.append("Chromosome #" + i + ": " + population.getChromosomes()[i] + "\n");
-				}
+//				System.out.println("\nChromosomes from last generation:\n");
+//				textCalculation.append("\nChromosomes from last generation:\n");
+//				for (int i = 0; i < GeneticAlgorithm.POPULATION_SIZE; i++  ){
+//					
+//					System.out.println(population.getChromosomes()[i]);
+//					textCalculation.append("Chromosome #" + i + ": " + population.getChromosomes()[i] + "\n");
+//				}
 				
-				NaiveBayesModel bestModel = population.getChromosomes()[0].getNaiveB();
+				NaiveBayesModel bestModel = population.getChromosomes()[0].getNaiveBayesOfSelectedChromosome();
 				Evaluation evaluation;
 				
 				try {

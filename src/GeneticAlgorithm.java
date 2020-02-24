@@ -6,8 +6,8 @@ public class GeneticAlgorithm {
 
 	public static final int POPULATION_SIZE = 50; // Number of chromosomes in a population.
 	public static int[] TARGET_CHROMOSOME; // Used to extract the length of the given dataset.
-	public static final double MUTATION_RATE = 0.075; // Probability that a chromosome gene will be selected for random mutation.
-	public static final int NUMB_OF_ELITE_CHROMOSOMES = 2; // Chromosomes that will not be subjected to crossover or mutation.
+	public static final double MUTATION_RATE = 0.1; // Probability that a chromosome gene will be selected for random mutation.
+	public static final int NUMB_OF_ELITE_CHROMOSOMES = 3; // Chromosomes that will not be subjected to crossover or mutation.
 	public static final int TOURNAMENT_SELECTION_SIZE = 50; // Tournament population size, used for chromosome crossover selection.
 	private double fitnessOfTheFittestChromosomeFromGeneration;
 
@@ -42,6 +42,7 @@ public class GeneticAlgorithm {
 			mutatePopulation.getChromosomes()[x] = mutateChromosome(population.getChromosomes()[x]);
 		}
 		
+		Chromosome.setOutputTextChromosome("");
 		mutatePopulation.computeFitness(trainData, testData);
 		return mutatePopulation;
 	}
@@ -61,6 +62,7 @@ public class GeneticAlgorithm {
 		// Looping through the rest of chromosomes and selecting 2 fittest chromosomes from each tournament population 
 		// and doing crossover on them before returning the new population.	
 		System.out.println("Calling tournament population for non-elite chromosomes");
+		System.out.println("Test4");
 		for(int x = NUMB_OF_ELITE_CHROMOSOMES; x < population.getChromosomes().length; x++) {
 			
 			Chromosome chromosome1 = selectTournamentPopulation(population, trainData, testData).getChromosomes()[0];
@@ -77,10 +79,11 @@ public class GeneticAlgorithm {
 	private Population selectTournamentPopulation(Population population, Instances trainData, Instances testData) {
 		
 		Population tournamentPopulation = new Population(TOURNAMENT_SELECTION_SIZE);
-		
+		//System.out.println("New tournament Start");
 		for(int x = 0; x < TOURNAMENT_SELECTION_SIZE; x++) {
 			
 			tournamentPopulation.getChromosomes()[x] = population.getChromosomes()[(int)(Math.random()*population.getChromosomes().length)];
+			//System.out.println("Tournament population got a new random chromosome from index: " + (int)(Math.random()*population.getChromosomes().length));
 		}
 		
 		tournamentPopulation.sortChromosomesByFitness();
