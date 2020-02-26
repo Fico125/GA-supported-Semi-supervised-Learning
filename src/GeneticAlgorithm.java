@@ -27,7 +27,6 @@ public class GeneticAlgorithm {
 	/** Method that applies mutation to some chromosomes in a population. */
 	private Population mutatePopulation(Population population,  Instances trainData, Instances testData) {
 		
-		System.out.println("Mutate population");
 		Population mutatePopulation = new Population(population.getChromosomes().length);
 		
 		// Excluding elite chromosomes from mutation.
@@ -44,13 +43,13 @@ public class GeneticAlgorithm {
 		
 		Chromosome.setOutputTextChromosome("");
 		mutatePopulation.computeFitness(trainData, testData);
+		fitnessOfTheFittestChromosomeFromGeneration = mutatePopulation.getChromosomes()[0].getFitness();
 		return mutatePopulation;
 	}
 	
 	/** Method that applies crossover to some chromosomes in a population. */
 	private Population crossoverPopulation(Population population, Instances trainData, Instances testData) {
 		
-		System.out.println("Crossover Population");
 		Population crossoverPopulation = new Population(population.getChromosomes().length);
 		
 		// Excluding elite chromosomes from crossover.
@@ -61,17 +60,13 @@ public class GeneticAlgorithm {
 		
 		// Looping through the rest of chromosomes and selecting 2 fittest chromosomes from each tournament population 
 		// and doing crossover on them before returning the new population.	
-		System.out.println("Calling tournament population for non-elite chromosomes");
-		System.out.println("Test4");
 		for(int x = NUMB_OF_ELITE_CHROMOSOMES; x < population.getChromosomes().length; x++) {
 			
 			Chromosome chromosome1 = selectTournamentPopulation(population, trainData, testData).getChromosomes()[0];
 			Chromosome chromosome2 = selectTournamentPopulation(population, trainData, testData).getChromosomes()[0];
 			crossoverPopulation.getChromosomes()[x] = crossoverChromosome(chromosome1, chromosome2);
 		}
-		
-		fitnessOfTheFittestChromosomeFromGeneration = crossoverPopulation.getChromosomes()[0].getFitness();
-		
+				
 		return crossoverPopulation;
 	}
 	
@@ -79,11 +74,10 @@ public class GeneticAlgorithm {
 	private Population selectTournamentPopulation(Population population, Instances trainData, Instances testData) {
 		
 		Population tournamentPopulation = new Population(TOURNAMENT_SELECTION_SIZE);
-		//System.out.println("New tournament Start");
+		
 		for(int x = 0; x < TOURNAMENT_SELECTION_SIZE; x++) {
 			
 			tournamentPopulation.getChromosomes()[x] = population.getChromosomes()[(int)(Math.random()*population.getChromosomes().length)];
-			//System.out.println("Tournament population got a new random chromosome from index: " + (int)(Math.random()*population.getChromosomes().length));
 		}
 		
 		tournamentPopulation.sortChromosomesByFitness();
