@@ -1,4 +1,8 @@
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Random;
+import java.util.Set;
 
 import weka.core.Instance;
 import weka.core.Instances;
@@ -98,6 +102,60 @@ public class FileHandler {
         new_data.setClassIndex(new_data.numAttributes() - 1);
 	  	new_data = FileHandler.numericToNominal(new_data);
         
+    	return new_data;
+    }
+    
+    public static Instances reduceDatasetByGivenPercent(Instances data, double percent) {
+    	
+    	//Instances new_data = data;
+    	Instances new_data = new Instances(data, 0);
+    	//new_data = FileHandler.numericToNominal(data);
+    	int newSize = (int) Math.round(data.numInstances() - (data.numInstances() * percent/100));
+    	int numZeros = 0;
+    	int numOnes = 0;
+    	
+    	for(int i = 0; i < data.numInstances(); i++) {
+    		
+    		int temp = (int) data.instance(i).classValue();
+    		if(temp == 0) numZeros++;
+    		else numOnes++;
+    	}
+
+    	int numberOfZerosToRemove = (int) (numZeros - (numZeros - (numZeros * (percent/100))));
+    	int numberOfOnesToRemove = (int) (numOnes - (numOnes - (numOnes * (percent/100))));
+    	Random random = new Random();
+    	int randomNumber;
+    	Set<Integer> listOfIndexes = new HashSet<Integer>(); // Using Set to block duplicate index values
+    	
+    	while(listOfIndexes.size() < (numberOfZerosToRemove + numberOfOnesToRemove)) {
+    		
+    		int i = 0;
+    		while(i < numberOfZerosToRemove) {
+    			
+        		randomNumber = random.nextInt(data.numInstances());
+    			if(data.instance(randomNumber).classValue() == 0.0 && !(listOfIndexes.contains(randomNumber)) && randomNumber != 0) {
+    				listOfIndexes.add(randomNumber);
+    				i++;
+    			}
+    		}
+    		
+    		i = 0;
+    		while(i < numberOfOnesToRemove) {
+    			
+        		randomNumber = random.nextInt(data.numInstances());
+    			if(data.instance(randomNumber).classValue() == 1.0 && !(listOfIndexes.contains(randomNumber)) && randomNumber != 0) {
+    				listOfIndexes.add(randomNumber);
+    				i++;
+    			}
+    		}
+    	}
+    	
+    	Iterator<Integer> iterator = listOfIndexes.iterator();
+    	while(iterator.hasNext()){
+    		
+    		new_data.add(data.instance(iterator.next()));
+    	}
+    	
     	return new_data;
     }
 }

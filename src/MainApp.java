@@ -165,12 +165,14 @@ public class MainApp {
 				
 				Instances testData = inputTest.getData();
 				testData = FileHandler.numericToNominal(testData);
-				//testData.setClassIndex(testData.numAttributes()-1);
+				
+				// We comment upper 2 lines for testData and uncomment these bottom 2 lines if we want to used
+				// reduced dataset for testing purposes.
+			    //Instances testData = FileHandler.reduceDatasetByGivenPercent(inputTest.getData(), 50.0);
+			    //testData = FileHandler.numericToNominal(testData);
 				
 				Instances predictionData = inputTrain.getData(); // ovo je cijeli test dataset, podaci i zadnji stupac
-				//predictionData.setClassIndex(trainData.numAttributes()-1);
 				predictionData = FileHandler.numericToNominal(predictionData);
-				
 				
 				population.computeFitness(trainData, testData);
 				
@@ -192,25 +194,16 @@ public class MainApp {
 					String ChromosomeBayesOutput = Chromosome.getOutputTextChromosome();
 					textCalculation.append(ChromosomeBayesOutput);
 					
-					double fittestChromosome = geneticAlgorithm.getFitnessOfTheFittestChromosomeFromGeneration();
-					System.out.println("\n\nFittness of the fittest chromosome in this population: " + String.valueOf(fittestChromosome) + "\n");
-					textCalculation.append("\n\nFittness of the fittest chromosome in this population: " + String.valueOf(fittestChromosome) + "\n");
+					double fitnessOfTheFittestChromosomeInGenerataion = geneticAlgorithm.getFitnessOfTheFittestChromosomeFromGeneration();
+					System.out.println("\n\nFittness of the fittest chromosome in this population: " + String.valueOf(fitnessOfTheFittestChromosomeInGenerataion) + "\n");
+					textCalculation.append("\n\nFittness of the fittest chromosome in this population: " + String.valueOf(fitnessOfTheFittestChromosomeInGenerataion) + "\n");
 					
-					fitnessFunctionEvolution.put(generationNumber, fittestChromosome); // Storing generation number and fitness of the fittest chromosome
+					fitnessFunctionEvolution.put(generationNumber, fitnessOfTheFittestChromosomeInGenerataion); // Storing generation number and fitness of the fittest chromosome
 					
-					if(fittestChromosome == 1.0) {
+					if(fitnessOfTheFittestChromosomeInGenerataion == 1.0) {
 						break;
 					}
 				}
-				
-//				System.out.println("\nChromosome fitness from last generation:");
-//				textCalculation.append("\nChromosome fitness from last generation:\n");
-//				
-//				for (int i = 0; i < GeneticAlgorithm.POPULATION_SIZE; i++  ){
-//					
-//					System.out.println(population.getChromosomes()[i].getFitness());
-//					textCalculation.append("Chromosome #" + i + ": " + String.valueOf(population.getChromosomes()[i].getFitness()) + "\n");
-//				}
 				
 				System.out.println("\nChromosomes and their fitness from last generation:\n");
 				textCalculation.append("\nChromosomes and their fitness from last generation:\n");
@@ -259,10 +252,7 @@ public class MainApp {
 			    	int predicted = (int) predictionsofLastModel[i];
 			    	System.out.println("Attribute #" + i + ", actual: " + actual + ", predicted: " + predicted);
 			    	textCalculation.append("Attribute #" + i + ", actual: " + actual + ", predicted: " + predicted + "\n");
-			    	if (actual == predicted) {
-				    	accuracy++;
-				    }
-				    
+
 				    // ako je vrijednost 0, smatramo ga pozitivnim (not-faulty), ako je 1, smatramo ga negativnim(faulty)
 				    if(actual == 0.0 && predicted == 0.0) { 
 				    	truePositive++;
@@ -278,6 +268,8 @@ public class MainApp {
 				    }
 
 			    }
+			    
+			    accuracy = (truePositive + trueNegative) / trainDataLastColumn.length;
 			    recall = truePositive / (truePositive + falseNegative);
 			    precision = truePositive / (truePositive + falsePositive);
 			    fmeasure = (2 * precision * recall) / (precision + recall);
@@ -316,7 +308,8 @@ public class MainApp {
 			    		"\tFN: " + falseNegative + "\n" + "FP: " + falsePositive + "\tTN: " + trueNegative);
 			    textScoring.append("Confusion matrix: \n" + "TP: " + truePositive + 
 			    		"\tFN: " + falseNegative + "\n" + "FP: " + falsePositive + "\tTN: " + trueNegative + "\n");
-			
+			    
+			    
 //				NaiveBayesModel bestModel = population.getChromosomes()[0].getNaiveBayesOfSelectedChromosome();
 //				Evaluation evaluation;
 //				

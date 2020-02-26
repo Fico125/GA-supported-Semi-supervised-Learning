@@ -1,6 +1,5 @@
 import java.util.Arrays;
 
-import weka.classifiers.Evaluation;
 import weka.core.Instances;
 
 public class Chromosome {

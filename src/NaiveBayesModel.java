@@ -1,6 +1,3 @@
-import java.util.Random;
-
-import weka.classifiers.Evaluation;
 import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.meta.FilteredClassifier;
 import weka.core.Instances;
@@ -11,7 +8,7 @@ public class NaiveBayesModel {
 	private static Instances testingDataSet;
 	private NaiveBayes naiveBayes;
 	private String resultText = "";
-	private Evaluation evaluation;
+	//private Evaluation evaluation;
 	
 	private double truePositive = 0.0;
 	private double trueNegative = 0.0;
@@ -34,36 +31,30 @@ public class NaiveBayesModel {
 		NaiveBayesModel.testingDataSet = testingDataSet;
 		
 		naiveBayes = new NaiveBayes();
-		evaluation = new Evaluation(NaiveBayesModel.trainingDataSet);
+		//evaluation = new Evaluation(NaiveBayesModel.trainingDataSet);
 	}
 	
 	public void process() throws Exception {
-		/*		
-		naiveBayes.buildClassifier(trainingDataSet);
-		evaluation.evaluateModel(naiveBayes, testingDataSet);
-		//evaluation.crossValidateModel(naiveBayes, trainingDataSet, 5, new Random(1));
-		resultText += evaluation.toSummaryString();
-		*/
+			
+//		naiveBayes.buildClassifier(trainingDataSet);
+//		evaluation.evaluateModel(naiveBayes, testingDataSet);
+//		resultText += evaluation.toSummaryString();
 
-	    NaiveBayes nb = new NaiveBayes();
-	    FilteredClassifier fc = new FilteredClassifier();
-	    fc.setClassifier(nb);
+		
+	    NaiveBayes naiveBayes = new NaiveBayes();
+	    FilteredClassifier filteredClassifier = new FilteredClassifier();
+	    filteredClassifier.setClassifier(naiveBayes);
 	    // train and make predictions
-	    fc.buildClassifier(trainingDataSet);
+	    filteredClassifier.buildClassifier(trainingDataSet);
 	    
 	    // Testing the model
 	    for (int i = 0; i < testingDataSet.numInstances(); i++) {
 	    	
-		    double pred = fc.classifyInstance(testingDataSet.instance(i));
-		    double actual = Double.parseDouble(testingDataSet.classAttribute().value((int) testingDataSet.instance(i).classValue()));
-		    double predicted = Double.parseDouble(testingDataSet.classAttribute().value((int) pred));
+		    double predicted = filteredClassifier.classifyInstance(testingDataSet.instance(i));
+		    double actual = testingDataSet.instance(i).classValue();
 		    predictions[i] = predicted;
-
-		    if (actual == predicted) {
-		    	accuracy++;
-		    }
 		    
-		    // ako je vrijednost 0, smatramo ga pozitivnim (not-faulty), ako je 1, smatramo ga negativnim(faulty)
+		    // if a value is 0, we consider it positive (not-faulty), if it is 1, we consider it negative (faulty)
 		    if(actual == 0.0 && predicted == 0.0) { 
 		    	truePositive++;
 		    }
@@ -77,6 +68,8 @@ public class NaiveBayesModel {
 		    	falsePositive++;
 		    }
 	    }
+	    
+	    accuracy = (truePositive + trueNegative) / testingDataSet.numInstances();
 	    recall = truePositive / (truePositive + falseNegative);
 	    precision = truePositive / (truePositive + falsePositive);
 	    fmeasure = (2 * precision * recall) / (precision + recall);
@@ -121,10 +114,10 @@ public class NaiveBayesModel {
 		return predictions;
 	}
 
-	public Evaluation getEvaluation() {
-		
-		return evaluation;
-	}
+//	public Evaluation getEvaluation() {
+//		
+//		return evaluation;
+//	}
 	
 	public double getAccuracy() {
 		
