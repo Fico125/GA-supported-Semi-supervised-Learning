@@ -167,7 +167,7 @@ public class MainApp {
 				//testData = FileHandler.numericToNominal(testData);
 				// We comment upper 2 lines for testData and uncomment these bottom 2 lines if we want to used
 				// reduced dataset for testing purposes.
-			    Instances testData = FileHandler.reduceDatasetByGivenPercent(inputTest.getData(), 50.0);
+			    Instances testData = FileHandler.reduceDatasetByGivenPercent(inputTest.getData(), 90.0);
 			    testData = FileHandler.numericToNominal(testData);
 				
 				Instances predictionData = inputTrain.getData(); // ovo je cijeli test dataset, podaci i zadnji stupac
@@ -316,7 +316,7 @@ public class MainApp {
 					Instances standardTrainData = inputTrain.getData();
 					standardTrainData = FileHandler.numericToNominal(standardTrainData);
 			    	
-					// Standard supervised learning using our class NaiveBayesModel and our evaluation
+					// Standard supervised learning using our class NaiveBayesModel and our evaluation without genetic algorithm
 					NaiveBayesModel standardNaiveBayes = new NaiveBayesModel(standardTestData, standardTrainData);
 					standardNaiveBayes.process();
 					String results = standardNaiveBayes.getResultText();
@@ -325,9 +325,9 @@ public class MainApp {
 					
 					// Standard supervised learning using Weka's NaiveBayes class, and Weka's evaluation
 					NaiveBayes naiveBayes = new NaiveBayes();
-					naiveBayes.buildClassifier(standardTestData);
-				    Evaluation evaluation = new Evaluation(standardTrainData);
-				    evaluation.evaluateModel(naiveBayes, standardTestData);
+					naiveBayes.buildClassifier(standardTestData); // We are building classificator on TestData, which can be original size or reduced
+				    Evaluation evaluation = new Evaluation(standardTestData);
+				    evaluation.evaluateModel(naiveBayes, standardTrainData);
 					textScoring.append("------------------------------------------------------------------------\n");
 					textScoring.append("Standard Supervised learning statistics using Evaluation class: \n" + evaluation.toSummaryString());
 					
