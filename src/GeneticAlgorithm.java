@@ -8,7 +8,7 @@ public class GeneticAlgorithm {
 	public static int[] TARGET_CHROMOSOME; // Used to extract the length of the given dataset.
 	public static final double MUTATION_RATE = 0.1; // Probability that a chromosome gene will be selected for random mutation.
 	public static final int NUMB_OF_ELITE_CHROMOSOMES = 3; // Chromosomes that will not be subjected to crossover or mutation.
-	public static final int TOURNAMENT_SELECTION_SIZE = 50; // Tournament population size, used for chromosome crossover selection.
+	public static final int TOURNAMENT_SELECTION_SIZE = 40; // Tournament population size, used for chromosome crossover selection.
 	private double fitnessOfTheFittestChromosomeFromGeneration;
 
 	public GeneticAlgorithm(Instances data) {

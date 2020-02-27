@@ -163,12 +163,12 @@ public class MainApp {
 				Instances trainData = dataWithoutLastColumn; // trainData spajamo sa posljednjim stupcem (GA outputom) prilikom izračunavanja fitnessa u metodi computeFitness
 				textCalculation.append("Number of attributes in a dataset: " + trainData.numAttributes() + "\n");
 				
-				//Instances testData = inputTest.getData();
-				//testData = FileHandler.numericToNominal(testData);
+				Instances testData = inputTest.getData();
+				testData = FileHandler.numericToNominal(testData);
 				// We comment upper 2 lines for testData and uncomment these bottom 2 lines if we want to used
 				// reduced dataset for testing purposes.
-			    Instances testData = FileHandler.reduceDatasetByGivenPercent(inputTest.getData(), 90.0);
-			    testData = FileHandler.numericToNominal(testData);
+			    //Instances testData = FileHandler.reduceDatasetByGivenPercent(inputTest.getData(), 10.0);
+			    //testData = FileHandler.numericToNominal(testData);
 				
 				Instances predictionData = inputTrain.getData(); // ovo je cijeli test dataset, podaci i zadnji stupac
 				predictionData = FileHandler.numericToNominal(predictionData);
@@ -205,13 +205,13 @@ public class MainApp {
 				}
 				
 				System.out.println("\nChromosomes and their fitness from last generation:\n");
-				textCalculation.append("\nChromosomes and their fitness from last generation:\n");
+				//textCalculation.append("\nChromosomes and their fitness from last generation:\n");
 				for (int i = 0; i < GeneticAlgorithm.POPULATION_SIZE; i++  ){
 					
 					System.out.println(population.getChromosomes()[i]  + " | Fitness: " + 
 							String.valueOf(population.getChromosomes()[i].getFitness()) + "\n");
-					textCalculation.append("Chromosome #" + i + ": " + population.getChromosomes()[i] + " | Fitness: " + 
-							String.valueOf(population.getChromosomes()[i].getFitness()) + "\n");
+					//textCalculation.append("Chromosome #" + i + ": " + population.getChromosomes()[i] + " | Fitness: " + 
+					//		String.valueOf(population.getChromosomes()[i].getFitness()) + "\n");
 				}
 				
 				System.out.println("\nEvolution of the best fitness function through the generations: ");
@@ -224,7 +224,7 @@ public class MainApp {
 			    	@SuppressWarnings("rawtypes")
 			    	Map.Entry mentry = (Map.Entry)iterator.next();
 			   		System.out.print("Generation: "+ mentry.getKey() + " Fitness function: ");
-			   		textCalculation.append("Generation: "+ mentry.getKey() + " Fitness function: ");
+			   		//textCalculation.append("Generation: "+ mentry.getKey() + " Fitness function: ");
 			   		System.out.println(mentry.getValue());
 			   		textCalculation.append(mentry.getValue() + "\n");
 			    }
@@ -244,13 +244,13 @@ public class MainApp {
 				double fmeasure = 0.0;
 				
 				System.out.println("\nPredictions: ");
-				textCalculation.append("\nPredictions: \n");
+				//textCalculation.append("\nPredictions: \n");
 			    for(int i = 0; i < trainDataLastColumn.length; i++) {
 			    	
 			    	int actual = trainDataLastColumn[i];
 			    	int predicted = (int) predictionsofLastModel[i];
 			    	System.out.println("Attribute #" + i + ", actual: " + actual + ", predicted: " + predicted);
-			    	textCalculation.append("Attribute #" + i + ", actual: " + actual + ", predicted: " + predicted + "\n");
+			    	//textCalculation.append("Attribute #" + i + ", actual: " + actual + ", predicted: " + predicted + "\n");
 
 				    // if a value is 0, we consider it positive (not-faulty), if it is 1, we consider it negative (faulty)
 				    if(actual == 0.0 && predicted == 0.0) { 
@@ -279,39 +279,42 @@ public class MainApp {
 			    System.out.println("Last model statistics: ");
 			    textScoring.append("Last model statistics: \n");
 			    
-			    System.out.println("Total number of instances: " + trainDataLastColumn.length);
-			    textScoring.append("Total number of instances: " + trainDataLastColumn.length + "\n");
+			    //System.out.println("Total number of instances: " + trainDataLastColumn.length);
+			    //textScoring.append("Total number of instances: " + trainDataLastColumn.length + "\n");
 			    
 			    System.out.println("Correctly classified instances: " + (truePositive + trueNegative));
-			    textScoring.append("Correctly classified instances: " + (truePositive + trueNegative) + "\n");
+			    textScoring.append(/*"Correctly classified instances: " + */(truePositive + trueNegative) + "\n");
 			    
 			    System.out.println("Incorrectly classified instances: " + (falsePositive + falseNegative));
-			    textScoring.append("Incorrectly classified instances: " + (falsePositive + falseNegative) + "\n");
+			    textScoring.append(/*"Incorrectly classified instances: " + */(falsePositive + falseNegative) + "\n");
 			    
 			    System.out.println("Geometric mean: " + geometricMean);
-			    textScoring.append("Geometric mean: " + geometricMean + "\n");
+			    textScoring.append(/*"Geometric mean: " + */geometricMean + "\n");
 			    
 			    System.out.println("F measure: " + fmeasure);
-			    textScoring.append("F measure: " + fmeasure + "\n");
+			    textScoring.append(/*"F measure: " + */fmeasure + "\n");
 			    
 			    System.out.println("Precision: " + precision);
-			    textScoring.append("Precision: " + precision + "\n");
+			    textScoring.append(/*"Precision: " + */precision + "\n");
 			    
 			    System.out.println("Recall: " + recall);
-			    textScoring.append("Recall: " + recall + "\n");
+			    textScoring.append(/*"Recall: " + */recall + "\n");
 
 			    System.out.println("Accuracy: " + accuracy);
-			    textScoring.append("Accuracy: " + accuracy + "\n");
+			    textScoring.append(/*"Accuracy: " + */accuracy + "\n");
 			    
-			    System.out.println("Confusion matrix: \n" + "TP: " + truePositive + 
-			    		"\tFN: " + falseNegative + "\n" + "FP: " + falsePositive + "\tTN: " + trueNegative);
-			    textScoring.append("Confusion matrix: \n" + "TP: " + truePositive + 
-			    		"\tFN: " + falseNegative + "\n" + "FP: " + falsePositive + "\tTN: " + trueNegative + "\n");
+			    //System.out.println("Confusion matrix: \n" + "TP: " + truePositive + 
+			    //		"\tFN: " + falseNegative + "\n" + "FP: " + falsePositive + "\tTN: " + trueNegative);
+			    //textScoring.append("Confusion matrix: \n" + "TP: " + truePositive + 
+			    //		"\tFN: " + falseNegative + "\n" + "FP: " + falsePositive + "\tTN: " + trueNegative + "\n");
+			    textScoring.append(truePositive + "\n" + 
+			    		falseNegative + "\n" + 
+			    		falsePositive + "\n" + 
+			    		trueNegative + "\n");
 			    
 			    
 			    try {
-					//Instances standardTestData = inputTest.getData();
-					//standardTestData = FileHandler.numericToNominal(standardTestData);
+
 			    	Instances standardTestData = testData;
 					Instances standardTrainData = inputTrain.getData();
 					standardTrainData = FileHandler.numericToNominal(standardTrainData);
@@ -324,12 +327,12 @@ public class MainApp {
 					textScoring.append("Standard Supervised learning statistics using our method for evaluation: \n" + results + "\n");
 					
 					// Standard supervised learning using Weka's NaiveBayes class, and Weka's evaluation
-					NaiveBayes naiveBayes = new NaiveBayes();
-					naiveBayes.buildClassifier(standardTestData); // We are building classificator on TestData, which can be original size or reduced
-				    Evaluation evaluation = new Evaluation(standardTestData);
-				    evaluation.evaluateModel(naiveBayes, standardTrainData);
-					textScoring.append("------------------------------------------------------------------------\n");
-					textScoring.append("Standard Supervised learning statistics using Evaluation class: \n" + evaluation.toSummaryString());
+//					NaiveBayes naiveBayes = new NaiveBayes();
+//					naiveBayes.buildClassifier(standardTestData); // We are building classificator on TestData, which can be original size or reduced
+//				    Evaluation evaluation = new Evaluation(standardTestData);
+//				    evaluation.evaluateModel(naiveBayes, standardTrainData);
+//					textScoring.append("------------------------------------------------------------------------\n");
+//					textScoring.append("Standard Supervised learning statistics using Evaluation class: \n" + evaluation.toSummaryString());
 					
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block

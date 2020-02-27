@@ -77,15 +77,19 @@ public class NaiveBayesModel {
 	    trueNegativeRate = trueNegative / (trueNegative + falsePositive);
 	    geometricMean = Math.sqrt(truePositiveRate * trueNegativeRate);
 	    
-	    resultText += "Correctly classified instances: " + (truePositive + trueNegative) + "\n";
-	    resultText += "Incorrectly classified instances: " + (falsePositive + falseNegative) + "\n";
-	    resultText += "Geometric mean: " + geometricMean + "\n";
-	    resultText += "F measure: " + fmeasure + "\n";
-	    resultText += "Precision: " + precision + "\n";
-	    resultText += "Recall: " + recall + "\n";
-	    resultText += "Accuracy: " + accuracy + "\n";
-	    resultText += "Confusion matrix: \n" + "TP: " + truePositive + 
-	    		"\tFN: " + falseNegative + "\n" + "FP: " + falsePositive + "\tTN: " + trueNegative + "\n";
+	    resultText += /*"Correctly classified instances: " + */(truePositive + trueNegative) + "\n";
+	    resultText += /*"Incorrectly classified instances: " + */(falsePositive + falseNegative) + "\n";
+	    resultText += /*"Geometric mean: " + */geometricMean + "\n";
+	    resultText += /*"F measure: " + */fmeasure + "\n";
+	    resultText += /*"Precision: " + */precision + "\n";
+	    resultText += /*"Recall: " + */recall + "\n";
+	    resultText += /*"Accuracy: " + */accuracy + "\n";
+	    //resultText += "Confusion matrix: \n" + "TP: " + truePositive + 
+	    //		"\tFN: " + falseNegative + "\n" + "FP: " + falsePositive + "\tTN: " + trueNegative + "\n";
+	    resultText += truePositive + "\n" + 
+	    		falseNegative + "\n" + 
+	    		falsePositive + "\n" + 
+	    		trueNegative + "\n";
 	    
 	    System.out.println("Correctly classified instances: " + (truePositive + trueNegative));
 	    System.out.println("Incorrectly classified instances: " + (falsePositive + falseNegative));
