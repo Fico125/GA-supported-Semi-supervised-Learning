@@ -163,13 +163,13 @@ public class MainApp {
 				Instances trainData = dataWithoutLastColumn; // trainData spajamo sa posljednjim stupcem (GA outputom) prilikom izračunavanja fitnessa u metodi computeFitness
 				textCalculation.append("Number of attributes in a dataset: " + trainData.numAttributes() + "\n");
 				
-				Instances testData = inputTest.getData();
-				testData = FileHandler.numericToNominal(testData);
+				//Instances testData = inputTest.getData();
+				//testData = FileHandler.numericToNominal(testData);
 				
 				// We comment upper 2 lines for testData and uncomment these bottom 2 lines if we want to used
 				// reduced dataset for testing purposes.
-			    //Instances testData = FileHandler.reduceDatasetByGivenPercent(inputTest.getData(), 50.0);
-			    //testData = FileHandler.numericToNominal(testData);
+			    Instances testData = FileHandler.reduceDatasetByGivenPercent(inputTest.getData(), 20.0);
+			    testData = FileHandler.numericToNominal(testData);
 				
 				Instances predictionData = inputTrain.getData(); // ovo je cijeli test dataset, podaci i zadnji stupac
 				predictionData = FileHandler.numericToNominal(predictionData);

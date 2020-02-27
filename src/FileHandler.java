@@ -107,9 +107,7 @@ public class FileHandler {
     
     public static Instances reduceDatasetByGivenPercent(Instances data, double percent) {
     	
-    	//Instances new_data = data;
     	Instances new_data = new Instances(data, 0);
-    	//new_data = FileHandler.numericToNominal(data);
     	int newSize = (int) Math.round(data.numInstances() - (data.numInstances() * percent/100));
     	int numZeros = 0;
     	int numOnes = 0;
@@ -121,16 +119,17 @@ public class FileHandler {
     		else numOnes++;
     	}
 
-    	int numberOfZerosToRemove = (int) (numZeros - (numZeros - (numZeros * (percent/100))));
-    	int numberOfOnesToRemove = (int) (numOnes - (numOnes - (numOnes * (percent/100))));
+    	int newNumberOfZeros = (int) ((numZeros - (numZeros * (percent/100))));
+    	int newNumberOfOnes = (int) ((numOnes - (numOnes * (percent/100))));
+    	
     	Random random = new Random();
     	int randomNumber;
     	Set<Integer> listOfIndexes = new HashSet<Integer>(); // Using Set to block duplicate index values
     	
-    	while(listOfIndexes.size() < (numberOfZerosToRemove + numberOfOnesToRemove)) {
+    	while(listOfIndexes.size() < (newNumberOfZeros + newNumberOfOnes)) {
     		
     		int i = 0;
-    		while(i < numberOfZerosToRemove) {
+    		while(i < newNumberOfZeros) {
     			
         		randomNumber = random.nextInt(data.numInstances());
     			if(data.instance(randomNumber).classValue() == 0.0 && !(listOfIndexes.contains(randomNumber)) && randomNumber != 0) {
@@ -140,7 +139,7 @@ public class FileHandler {
     		}
     		
     		i = 0;
-    		while(i < numberOfOnesToRemove) {
+    		while(i < newNumberOfOnes) {
     			
         		randomNumber = random.nextInt(data.numInstances());
     			if(data.instance(randomNumber).classValue() == 1.0 && !(listOfIndexes.contains(randomNumber)) && randomNumber != 0) {
