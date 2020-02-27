@@ -165,10 +165,9 @@ public class MainApp {
 				
 				//Instances testData = inputTest.getData();
 				//testData = FileHandler.numericToNominal(testData);
-				
 				// We comment upper 2 lines for testData and uncomment these bottom 2 lines if we want to used
 				// reduced dataset for testing purposes.
-			    Instances testData = FileHandler.reduceDatasetByGivenPercent(inputTest.getData(), 20.0);
+			    Instances testData = FileHandler.reduceDatasetByGivenPercent(inputTest.getData(), 50.0);
 			    testData = FileHandler.numericToNominal(testData);
 				
 				Instances predictionData = inputTrain.getData(); // ovo je cijeli test dataset, podaci i zadnji stupac
@@ -253,7 +252,7 @@ public class MainApp {
 			    	System.out.println("Attribute #" + i + ", actual: " + actual + ", predicted: " + predicted);
 			    	textCalculation.append("Attribute #" + i + ", actual: " + actual + ", predicted: " + predicted + "\n");
 
-				    // ako je vrijednost 0, smatramo ga pozitivnim (not-faulty), ako je 1, smatramo ga negativnim(faulty)
+				    // if a value is 0, we consider it positive (not-faulty), if it is 1, we consider it negative (faulty)
 				    if(actual == 0.0 && predicted == 0.0) { 
 				    	truePositive++;
 				    }
@@ -310,36 +309,32 @@ public class MainApp {
 			    		"\tFN: " + falseNegative + "\n" + "FP: " + falsePositive + "\tTN: " + trueNegative + "\n");
 			    
 			    
-//				NaiveBayesModel bestModel = population.getChromosomes()[0].getNaiveBayesOfSelectedChromosome();
-//				Evaluation evaluation;
-//				
-//				try {
-//					
-//					evaluation = new Evaluation(predictionData);
-//					evaluation.evaluateModel(bestModel.getNaiveBayes(), predictionData);
-//					
-//					double TPR = evaluation.truePositiveRate(1);
-//					double TNR = evaluation.trueNegativeRate(1);
-//					double geometricMean = Math.sqrt(TPR * TNR);
-//					System.out.println("\nBest Model Statistics: " + evaluation.toSummaryString());
-//					textScoring.append("Best Model Statistics: \n" + evaluation.toSummaryString());
-//					textScoring.append("Area under ROC \t\t\t" + evaluation.areaUnderROC(1) + "\n");
-//					textScoring.append("Error rate \t\t\t" + evaluation.errorRate() + "\n");
-//					textScoring.append("F-measure \t\t\t" + evaluation.fMeasure(1) + "\n");
-//					textScoring.append("Precision \t\t\t" + evaluation.precision(1) + "\n");
-//					textScoring.append("Recall \t\t\t" + evaluation.recall(1) + "\n");
-//					textScoring.append("Geometric mean \t\t\t" + geometricMean + "\n");
-//					textScoring.append("True positive rate \t\t\t" + evaluation.truePositiveRate(1) + "\n");
-//					textScoring.append("True negative rate \t\t\t" + evaluation.trueNegativeRate(1) + "\n");
-//					textScoring.append("Confusion Matrix \n" + 
-//					"TP: " + evaluation.confusionMatrix()[0][0] + "\t" + 
-//					"   FN: " + evaluation.confusionMatrix()[0][1] + "\n" + 
-//					"FP: " + evaluation.confusionMatrix()[1][0] + "\t" + 
-//					"   TN: " + evaluation.confusionMatrix()[1][1] + "\n" + "\n");
-//
-//				} catch (Exception e1) {
-//					e1.printStackTrace();
-//				}
+			    try {
+					//Instances standardTestData = inputTest.getData();
+					//standardTestData = FileHandler.numericToNominal(standardTestData);
+			    	Instances standardTestData = testData;
+					Instances standardTrainData = inputTrain.getData();
+					standardTrainData = FileHandler.numericToNominal(standardTrainData);
+			    	
+					// Standard supervised learning using our class NaiveBayesModel and our evaluation
+					NaiveBayesModel standardNaiveBayes = new NaiveBayesModel(standardTestData, standardTrainData);
+					standardNaiveBayes.process();
+					String results = standardNaiveBayes.getResultText();
+					textScoring.append("------------------------------------------------------------------------\n");
+					textScoring.append("Standard Supervised learning statistics using our method for evaluation: \n" + results + "\n");
+					
+					// Standard supervised learning using Weka's NaiveBayes class, and Weka's evaluation
+					NaiveBayes naiveBayes = new NaiveBayes();
+					naiveBayes.buildClassifier(standardTestData);
+				    Evaluation evaluation = new Evaluation(standardTrainData);
+				    evaluation.evaluateModel(naiveBayes, standardTestData);
+					textScoring.append("------------------------------------------------------------------------\n");
+					textScoring.append("Standard Supervised learning statistics using Evaluation class: \n" + evaluation.toSummaryString());
+					
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});		
 	}
