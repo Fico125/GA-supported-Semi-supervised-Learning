@@ -55,6 +55,8 @@ public class MainApp {
 	
 	public void createContents() {
 		
+		HashMap<Integer, Double> fitnessFunctionEvolution = new HashMap<Integer, Double>();
+		
 		shlApp = new Shell();
 		shlApp.setMinimumSize(90, 22);
 		shlApp.setMaximized(true);
@@ -68,12 +70,32 @@ public class MainApp {
 		
 		Input inputTrain = new Input();
 		Input inputTest = new Input();
-		
-		HashMap<Integer, Double> fitnessFunctionEvolution = new HashMap<Integer, Double>();
-		
+				
 		Button btnClose = new Button(shlApp, SWT.NONE);
 		btnClose.setBounds(0, 170, 134, 28);
 		btnClose.setText("Close");
+		
+		Button btnUcitajTrain = new Button(shlApp, SWT.NONE);
+		btnUcitajTrain.setBounds(0, 9, 134, 28);
+		btnUcitajTrain.setText("Add file (Train)");
+
+		Button btnDatotekaSpremna = new Button(shlApp, SWT.CHECK);
+		btnDatotekaSpremna.setBounds(10, 43, 124, 18);
+		btnDatotekaSpremna.setText("File ready");
+		btnDatotekaSpremna.setEnabled(false);
+		
+		Button btnUcitajTest = new Button(shlApp, SWT.NONE);
+		btnUcitajTest.setBounds(0, 67, 134, 28);
+		btnUcitajTest.setText("Add file (Test)");
+
+		Button btnDatotekaTestSpremna = new Button(shlApp, SWT.CHECK);
+		btnDatotekaTestSpremna.setBounds(10, 101, 124, 18);
+		btnDatotekaTestSpremna.setText("File ready");
+		btnDatotekaTestSpremna.setEnabled(false);
+		
+		Button btnIzracunaj = new Button(shlApp, SWT.NONE);
+		btnIzracunaj.setBounds(0, 135, 134, 28);
+		btnIzracunaj.setText("Start");
 		
 		btnClose.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -86,15 +108,6 @@ public class MainApp {
 				}
 			}
 		});
-		
-		Button btnUcitajTrain = new Button(shlApp, SWT.NONE);
-		btnUcitajTrain.setBounds(0, 9, 134, 28);
-		btnUcitajTrain.setText("Add file (Train)");
-
-		Button btnDatotekaSpremna = new Button(shlApp, SWT.CHECK);
-		btnDatotekaSpremna.setBounds(10, 43, 124, 18);
-		btnDatotekaSpremna.setText("File ready");
-		btnDatotekaSpremna.setEnabled(false);
 		
 		btnUcitajTrain.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -114,15 +127,6 @@ public class MainApp {
 			}
 		});
 		
-		Button btnUcitajTest = new Button(shlApp, SWT.NONE);
-		btnUcitajTest.setBounds(0, 67, 134, 28);
-		btnUcitajTest.setText("Add file (Test)");
-
-		Button btnDatotekaTestSpremna = new Button(shlApp, SWT.CHECK);
-		btnDatotekaTestSpremna.setBounds(10, 101, 124, 18);
-		btnDatotekaTestSpremna.setText("File ready");
-		btnDatotekaTestSpremna.setEnabled(false);
-		
 		btnUcitajTest.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -141,15 +145,12 @@ public class MainApp {
 			}
 		});
 		
-		Button btnIzracunaj = new Button(shlApp, SWT.NONE);
-		btnIzracunaj.setBounds(0, 135, 134, 28);
-		btnIzracunaj.setText("Start");
-		
 		btnIzracunaj.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				
 				GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(inputTrain.getData());
+				int generationNumber = 0;
 
 				textCalculation.append("Dataset length: " + GeneticAlgorithm.TARGET_CHROMOSOME.length + "\n");
 				textCalculation.append("Number of generations: " + MAXIMUM_NUMBER_OF_GENERATIONS + "\n");
@@ -174,8 +175,6 @@ public class MainApp {
 				predictionData = FileHandler.numericToNominal(predictionData);
 				
 				population.computeFitness(trainData, testData);
-				
-				int generationNumber = 0;
 				
 				while(generationNumber < MAXIMUM_NUMBER_OF_GENERATIONS) {	
 					
@@ -265,7 +264,6 @@ public class MainApp {
 				    else { // actual == 1.0 && predicted == 0.0
 				    	falsePositive++;
 				    }
-
 			    }
 			    
 			    accuracy = (truePositive + trueNegative) / trainDataLastColumn.length;
@@ -311,8 +309,7 @@ public class MainApp {
 			    		falseNegative + "\n" + 
 			    		falsePositive + "\n" + 
 			    		trueNegative + "\n");
-			    
-			    
+			        
 			    try {
 
 			    	Instances standardTestData = testData;
@@ -335,7 +332,6 @@ public class MainApp {
 //					textScoring.append("Standard Supervised learning statistics using Evaluation class: \n" + evaluation.toSummaryString());
 					
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}

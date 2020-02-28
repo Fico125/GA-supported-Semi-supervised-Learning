@@ -8,7 +8,6 @@ public class NaiveBayesModel {
 	private static Instances testingDataSet;
 	private NaiveBayes naiveBayes;
 	private String resultText = "";
-	//private Evaluation evaluation;
 	
 	private double truePositive = 0.0;
 	private double trueNegative = 0.0;
@@ -31,15 +30,9 @@ public class NaiveBayesModel {
 		NaiveBayesModel.testingDataSet = testingDataSet;
 		
 		naiveBayes = new NaiveBayes();
-		//evaluation = new Evaluation(NaiveBayesModel.trainingDataSet);
 	}
 	
 	public void process() throws Exception {
-			
-//		naiveBayes.buildClassifier(trainingDataSet);
-//		evaluation.evaluateModel(naiveBayes, testingDataSet);
-//		resultText += evaluation.toSummaryString();
-
 		
 	    NaiveBayes naiveBayes = new NaiveBayes();
 	    FilteredClassifier filteredClassifier = new FilteredClassifier();
@@ -86,7 +79,8 @@ public class NaiveBayesModel {
 	    resultText += /*"Accuracy: " + */accuracy + "\n";
 	    //resultText += "Confusion matrix: \n" + "TP: " + truePositive + 
 	    //		"\tFN: " + falseNegative + "\n" + "FP: " + falsePositive + "\tTN: " + trueNegative + "\n";
-	    resultText += truePositive + "\n" + 
+	    resultText += 
+	    		truePositive + "\n" + 
 	    		falseNegative + "\n" + 
 	    		falsePositive + "\n" + 
 	    		trueNegative + "\n";
@@ -117,11 +111,6 @@ public class NaiveBayesModel {
 		
 		return predictions;
 	}
-
-//	public Evaluation getEvaluation() {
-//		
-//		return evaluation;
-//	}
 	
 	public double getAccuracy() {
 		

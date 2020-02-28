@@ -111,7 +111,10 @@ public class FileHandler {
     	int newSize = (int) Math.round(data.numInstances() - (data.numInstances() * percent/100));
     	int numZeros = 0;
     	int numOnes = 0;
-    	
+    	Random random = new Random();
+    	int randomNumber;
+    	Set<Integer> listOfIndexes = new HashSet<Integer>(); // Using Set to block duplicate index values
+
     	for(int i = 0; i < data.numInstances(); i++) {
     		
     		int temp = (int) data.instance(i).classValue();
@@ -122,9 +125,6 @@ public class FileHandler {
     	int newNumberOfZeros = (int) ((numZeros - (numZeros * (percent/100))));
     	int newNumberOfOnes = (int) ((numOnes - (numOnes * (percent/100))));
     	
-    	Random random = new Random();
-    	int randomNumber;
-    	Set<Integer> listOfIndexes = new HashSet<Integer>(); // Using Set to block duplicate index values
     	
     	while(listOfIndexes.size() < (newNumberOfZeros + newNumberOfOnes)) {
     		

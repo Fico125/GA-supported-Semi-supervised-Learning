@@ -40,21 +40,6 @@ public class Chromosome {
 			chromosomeFitness = naiveB.getGeometricMean();
 			outputTextChromosome += "\n************************************************************\n";
 			outputTextChromosome += "Model summary for chromosome: \n" + naiveB.getResultText();
-			/*
-			Evaluation evaluation = naiveB.getEvaluation();
-			
-			outputTextChromosome += "\n************************************************************";
-			System.out.println("Model summary for chromosome: " + evaluation.toSummaryString());
-			outputTextChromosome += "\nModel summary for chromosome: " + naiveB.getResultText();
-			//FF-a je Geometric mean => korijen od(TPR * TNR)
-			//double TPR = evaluation.truePositiveRate(1);
-			//double TNR = evaluation.trueNegativeRate(1);
-			//double geometricMean = Math.sqrt(TPR * TNR);
-			//chromosomeFitness = geometricMean;
-			chromosomeFitness = evaluation.precision(1);
-			System.out.println("Chromosome fitness (precision): " + chromosomeFitness);
-			outputTextChromosome += "Chromosome fitness (precision): " + chromosomeFitness;
-			*/
 		} catch (Exception e1) {
 			
 			e1.printStackTrace();
