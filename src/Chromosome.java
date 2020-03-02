@@ -38,6 +38,7 @@ public class Chromosome {
 			naiveB = new NaiveBayesModel(trainData, testData);
 			naiveB.process();
 			chromosomeFitness = naiveB.getGeometricMean();
+			//chromosomeFitness = naiveB.getFmeasure();
 			outputTextChromosome += "\n************************************************************\n";
 			outputTextChromosome += "Model summary for chromosome: \n" + naiveB.getResultText();
 		} catch (Exception e1) {

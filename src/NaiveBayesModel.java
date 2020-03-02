@@ -47,18 +47,18 @@ public class NaiveBayesModel {
 		    double actual = testingDataSet.instance(i).classValue();
 		    predictions[i] = predicted;
 		    
-		    // if a value is 0, we consider it positive (not-faulty), if it is 1, we consider it negative (faulty)
+		    // if a value is 0, we consider it positive (faulty), if it is 1, we consider it negative (not-faulty) 
 		    if(actual == 0.0 && predicted == 0.0) { 
-		    	truePositive++;
-		    }
-		    else if(actual == 0.0 && predicted == 1.0) {
-		    	falseNegative++;
-		    }
-		    else if(actual == 1.0 && predicted == 1.0) {
 		    	trueNegative++;
 		    }
-		    else { // actual == 1.0 && predicted == 0.0
+		    else if(actual == 0.0 && predicted == 1.0) {
 		    	falsePositive++;
+		    }
+		    else if(actual == 1.0 && predicted == 1.0) {
+		    	truePositive++;
+		    }
+		    else { // actual == 1.0 && predicted == 0.0
+		    	falseNegative++;
 		    }
 	    }
 	    

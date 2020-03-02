@@ -164,12 +164,12 @@ public class MainApp {
 				Instances trainData = dataWithoutLastColumn; // trainData spajamo sa posljednjim stupcem (GA outputom) prilikom izračunavanja fitnessa u metodi computeFitness
 				textCalculation.append("Number of attributes in a dataset: " + trainData.numAttributes() + "\n");
 				
-				Instances testData = inputTest.getData();
-				testData = FileHandler.numericToNominal(testData);
+				//Instances testData = inputTest.getData();
+				//testData = FileHandler.numericToNominal(testData);
 				// We comment upper 2 lines for testData and uncomment these bottom 2 lines if we want to used
 				// reduced dataset for testing purposes.
-			    //Instances testData = FileHandler.reduceDatasetByGivenPercent(inputTest.getData(), 10.0);
-			    //testData = FileHandler.numericToNominal(testData);
+			    Instances testData = FileHandler.reduceDatasetByGivenPercent(inputTest.getData(), 98.0);
+			    testData = FileHandler.numericToNominal(testData);
 				
 				Instances predictionData = inputTrain.getData(); // ovo je cijeli test dataset, podaci i zadnji stupac
 				predictionData = FileHandler.numericToNominal(predictionData);
@@ -251,18 +251,18 @@ public class MainApp {
 			    	System.out.println("Attribute #" + i + ", actual: " + actual + ", predicted: " + predicted);
 			    	//textCalculation.append("Attribute #" + i + ", actual: " + actual + ", predicted: " + predicted + "\n");
 
-				    // if a value is 0, we consider it positive (not-faulty), if it is 1, we consider it negative (faulty)
+				    // if a value is 0, we consider it positive (faulty), if it is 1, we consider it negative (not-faulty) 
 				    if(actual == 0.0 && predicted == 0.0) { 
-				    	truePositive++;
-				    }
-				    else if(actual == 0.0 && predicted == 1.0) {
-				    	falseNegative++;
-				    }
-				    else if(actual == 1.0 && predicted == 1.0) {
 				    	trueNegative++;
 				    }
-				    else { // actual == 1.0 && predicted == 0.0
+				    else if(actual == 0.0 && predicted == 1.0) {
 				    	falsePositive++;
+				    }
+				    else if(actual == 1.0 && predicted == 1.0) {
+				    	truePositive++;
+				    }
+				    else { // actual == 1.0 && predicted == 0.0
+				    	falseNegative++;
 				    }
 			    }
 			    
@@ -305,10 +305,18 @@ public class MainApp {
 			    //		"\tFN: " + falseNegative + "\n" + "FP: " + falsePositive + "\tTN: " + trueNegative);
 			    //textScoring.append("Confusion matrix: \n" + "TP: " + truePositive + 
 			    //		"\tFN: " + falseNegative + "\n" + "FP: " + falsePositive + "\tTN: " + trueNegative + "\n");
-			    textScoring.append(truePositive + "\n" + 
+			    System.out.println(
+			    		"TP: " + truePositive + "\n" + 
+			    		"FN: " + falseNegative + "\n" + 
+			    		"FP: " + falsePositive + "\n" + 
+			    		"TN: " + trueNegative + "\n");
+			    
+			    textScoring.append(
+			    		truePositive + "\n" + 
 			    		falseNegative + "\n" + 
 			    		falsePositive + "\n" + 
 			    		trueNegative + "\n");
+			    
 			        
 			    try {
 
@@ -321,7 +329,7 @@ public class MainApp {
 					standardNaiveBayes.process();
 					String results = standardNaiveBayes.getResultText();
 					textScoring.append("------------------------------------------------------------------------\n");
-					textScoring.append("Standard Supervised learning statistics using our method for evaluation: \n" + results + "\n");
+					textScoring.append("Standard Supervised learning statistics: \n" + results + "\n");
 					
 					// Standard supervised learning using Weka's NaiveBayes class, and Weka's evaluation
 //					NaiveBayes naiveBayes = new NaiveBayes();
@@ -334,6 +342,9 @@ public class MainApp {
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
+			    
+			    String testDatasetReductionOutput = FileHandler.getReductionOfDatasetOutput();
+			    textScoring.append(testDatasetReductionOutput);
 			}
 		});		
 	}

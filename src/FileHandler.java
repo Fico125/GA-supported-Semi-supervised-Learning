@@ -13,6 +13,8 @@ import weka.filters.unsupervised.attribute.Remove;
 
 @SuppressWarnings("unused")
 public class FileHandler {
+	
+	private static String reductionOfDatasetOutput = "";
 
 	// Converting numeric to nominal values
     protected static Instances numericToNominal(Instances instance) {
@@ -111,24 +113,48 @@ public class FileHandler {
     	int newSize = (int) Math.round(data.numInstances() - (data.numInstances() * percent/100));
     	int numZeros = 0;
     	int numOnes = 0;
-    	Random random = new Random();
     	int randomNumber;
+    	Random random = new Random();
     	Set<Integer> listOfIndexes = new HashSet<Integer>(); // Using Set to block duplicate index values
 
+    	// Counting how many zeros and ones we have in a dataset
     	for(int i = 0; i < data.numInstances(); i++) {
     		
     		int temp = (int) data.instance(i).classValue();
     		if(temp == 0) numZeros++;
     		else numOnes++;
     	}
+    	
+    	System.out.println("Dataset before reduction: " + "\nNumber of instances: " + data.numInstances() + 
+    			"\nNumber of zeros: " + numZeros + "\nNumber of ones: " + numOnes + "\n");
+    	reductionOfDatasetOutput += "Dataset before reduction: " + "\nNumber of instances: " + data.numInstances() + 
+    			"\nNumber of zeros: " + numZeros + "\nNumber of ones: " + numOnes + "\n";
 
+    	// Variables storing the amount of new ones and zeros we need to have in a reducted dataset.
     	int newNumberOfZeros = (int) ((numZeros - (numZeros * (percent/100))));
     	int newNumberOfOnes = (int) ((numOnes - (numOnes * (percent/100))));
     	
+    	if((newNumberOfZeros + newNumberOfOnes) == 3) {
+    		if(Math.random() < 0.5) 
+    		{
+    			newNumberOfZeros = 2;
+    			newNumberOfOnes = 1;
+    		} else {
+    			newNumberOfZeros = 1;
+    			newNumberOfOnes = 2;
+    		}
+    	}
     	
+    	System.out.println("\nDataset after reduction: " + "\nNumber of instances: " + (newNumberOfZeros + newNumberOfOnes) + 
+    			"\nNumber of zeros: " + newNumberOfZeros + "\nNumber of ones: " + newNumberOfOnes + "\n");
+    	reductionOfDatasetOutput += "\nDataset after reduction: " + "\nNumber of instances: " + (newNumberOfZeros + newNumberOfOnes) + 
+    			"\nNumber of zeros: " + newNumberOfZeros + "\nNumber of ones: " + newNumberOfOnes + "\n";
+    	
+    	// Adding indexes to a list until we reach the size of reducted dataset (that is sum of new number of zeros and ones)
     	while(listOfIndexes.size() < (newNumberOfZeros + newNumberOfOnes)) {
     		
     		int i = 0;
+    		
     		while(i < newNumberOfZeros) {
     			
         		randomNumber = random.nextInt(data.numInstances());
@@ -157,4 +183,9 @@ public class FileHandler {
     	
     	return new_data;
     }
+    
+	public static String getReductionOfDatasetOutput() {
+		
+		return reductionOfDatasetOutput;
+	}
 }
