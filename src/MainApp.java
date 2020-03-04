@@ -168,7 +168,7 @@ public class MainApp {
 				//testData = FileHandler.numericToNominal(testData);
 				// We comment upper 2 lines for testData and uncomment these bottom 2 lines if we want to used
 				// reduced dataset for testing purposes.
-			    Instances testData = FileHandler.reduceDatasetByGivenPercent(inputTest.getData(), 98.0);
+			    Instances testData = FileHandler.reduceDatasetByGivenPercent(inputTest.getData(), 90.0);
 			    testData = FileHandler.numericToNominal(testData);
 				
 				Instances predictionData = inputTrain.getData(); // ovo je cijeli test dataset, podaci i zadnji stupac
@@ -203,12 +203,15 @@ public class MainApp {
 					}
 				}
 				
+				Chromosome[] lastGenChromosomes = new Chromosome[population.getChromosomes().length];
+				
 				System.out.println("\nChromosomes and their fitness from last generation:\n");
 				//textCalculation.append("\nChromosomes and their fitness from last generation:\n");
 				for (int i = 0; i < GeneticAlgorithm.POPULATION_SIZE; i++  ){
 					
 					System.out.println(population.getChromosomes()[i]  + " | Fitness: " + 
 							String.valueOf(population.getChromosomes()[i].getFitness()) + "\n");
+					lastGenChromosomes[i] = population.getChromosomes()[i];
 					//textCalculation.append("Chromosome #" + i + ": " + population.getChromosomes()[i] + " | Fitness: " + 
 					//		String.valueOf(population.getChromosomes()[i].getFitness()) + "\n");
 				}
@@ -228,6 +231,7 @@ public class MainApp {
 			   		textCalculation.append(mentry.getValue() + "\n");
 			    }
 			    
+			    //Y1'_BEST EVALUATION START
 			    double[] predictionsofLastModel = NaiveBayesModel.getPredictions();
 			    int[] trainDataLastColumn = FileHandler.getLastColumnValues(inputTrain.getData());
 				double truePositive = 0.0;
@@ -316,36 +320,101 @@ public class MainApp {
 			    		falseNegative + "\n" + 
 			    		falsePositive + "\n" + 
 			    		trueNegative + "\n");
-			    
-			        
-			    try {
+			    //Y1'_BEST EVALUATION END
 
-			    	Instances standardTestData = testData;
-					Instances standardTrainData = inputTrain.getData();
-					standardTrainData = FileHandler.numericToNominal(standardTrainData);
-			    	
-					// Standard supervised learning using our class NaiveBayesModel and our evaluation without genetic algorithm
-					NaiveBayesModel standardNaiveBayes = new NaiveBayesModel(standardTestData, standardTrainData);
-					standardNaiveBayes.process();
-					String results = standardNaiveBayes.getResultText();
-					textScoring.append("------------------------------------------------------------------------\n");
-					textScoring.append("Standard Supervised learning statistics: \n" + results + "\n");
-					
-					// Standard supervised learning using Weka's NaiveBayes class, and Weka's evaluation
-//					NaiveBayes naiveBayes = new NaiveBayes();
-//					naiveBayes.buildClassifier(standardTestData); // We are building classificator on TestData, which can be original size or reduced
-//				    Evaluation evaluation = new Evaluation(standardTestData);
-//				    evaluation.evaluateModel(naiveBayes, standardTrainData);
-//					textScoring.append("------------------------------------------------------------------------\n");
-//					textScoring.append("Standard Supervised learning statistics using Evaluation class: \n" + evaluation.toSummaryString());
-					
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
+			
+			    // BEST MODEL EVALUATION START
+//				NaiveBayesModel bestModel = population.getChromosomes()[0].getNaiveBayesOfSelectedChromosome();
+//				String bestModelOutput = bestModel.evaluateLastModel(bestModel.getFilteredClassifier(), predictionData);
+//			    System.out.println("Last model statistics: ");
+//			    textScoring.append("Last model statistics: \n" + bestModelOutput);
+			    // BEST MODEL EVALUATION END
 			    
+				// SUPERVISED LEARNING "CALLING METHOD" VERSION START
+			    String standardSupervisedLearningOutput = standardSupervisedLearning(inputTrain.getData(), testData);
+			    textScoring.append(standardSupervisedLearningOutput);
+				// SUPERVISED LEARNING "CALLING METHOD" VERSION END
+			    
+				// SUPERVISED LEARNING "within Izracunaj button" VERSION START
+//			    try {
+//
+//			    	Instances standardTestData = testData;
+//					Instances standardTrainData = inputTrain.getData();
+//					standardTrainData = FileHandler.numericToNominal(standardTrainData);
+//			    	
+//					// Standard supervised learning using our class NaiveBayesModel and our evaluation without genetic algorithm
+//					NaiveBayesModel standardNaiveBayes = new NaiveBayesModel(standardTestData, standardTrainData);
+//					standardNaiveBayes.process();
+//					String results = standardNaiveBayes.getResultText();
+//					textScoring.append("------------------------------------------------------------------------\n");
+//					textScoring.append("Standard Supervised learning statistics: \n" + results + "\n");
+//	
+//				} catch (Exception e1) {
+//					e1.printStackTrace();
+//				}
+				// SUPERVISED LEARNING "within Izracunaj button" VERSION END
+
 			    String testDatasetReductionOutput = FileHandler.getReductionOfDatasetOutput();
 			    textScoring.append(testDatasetReductionOutput);
+				
+			    String hammingDistanceOutput = calculateHammingDistanceBetweenChromosomes(lastGenChromosomes);
+			    textCalculation.append(hammingDistanceOutput);
 			}
 		});		
+	}
+	
+	public String standardSupervisedLearning(Instances train, Instances test) {
+		
+		String resultText = "";
+		
+	    try {
+
+	    	Instances standardTestData = test;
+			Instances standardTrainData = train;
+			standardTrainData = FileHandler.numericToNominal(standardTrainData);
+	    	
+			// Standard supervised learning using our class NaiveBayesModel and our evaluation without genetic algorithm
+			NaiveBayesModel standardNaiveBayes = new NaiveBayesModel(standardTestData, standardTrainData);
+			standardNaiveBayes.process();
+			resultText += "------------------------------------------------------------------------\n";
+			resultText += "Standard Supervised learning statistics: \n";
+			resultText += standardNaiveBayes.getResultText() + "\n";
+
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		
+		return resultText;
+	}
+	
+	public String calculateHammingDistanceBetweenChromosomes(Chromosome[] lastGenChromosomes) {
+		
+		String resultText = "";
+		int[] fittestChromosome = lastGenChromosomes[0].getGenes();
+		int chromosomeLength = lastGenChromosomes[0].getGenes().length;
+
+		System.out.println("Calculating Hamming distance between fittest chromosome and all the rest");
+		resultText += "Calculating Hamming distance between fittest chromosome and all the rest\n";
+		System.out.println("Chromosome length (number of genes): " + chromosomeLength);
+		resultText += "Chromosome length (number of genes): " + chromosomeLength + "\n";
+		
+		// Loop that passes through all of the rest chromosomes
+		for(int i = 1; i < lastGenChromosomes.length; i++) {
+			
+			int hammingDistance = 0;
+			int [] chromosomeGenes = lastGenChromosomes[i].getGenes();
+			
+			// Loop that passes through all genes of the i-th chromosome
+			for(int j = 0; j < chromosomeLength; j++) {
+				
+				if(fittestChromosome[j] != chromosomeGenes[j])
+					hammingDistance++;
+			}
+			
+			System.out.println("Distance between 1. and " + (i+1) + ". chromosome: " + hammingDistance);
+			resultText += "Distance between 1. and " + (i+1) + ". chromosome: " + hammingDistance + "\n";
+		}
+		
+		return resultText;
 	}
 }

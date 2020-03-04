@@ -7,6 +7,8 @@ public class NaiveBayesModel {
 	private static Instances trainingDataSet; // Sastoji se od training dataseta bez zadnjeg stupca + bitstringa generiranog genetskim algoritmom
 	private static Instances testingDataSet;
 	private NaiveBayes naiveBayes;
+	private FilteredClassifier filteredClassifier;
+
 	private String resultText = "";
 	
 	private double truePositive = 0.0;
@@ -35,7 +37,7 @@ public class NaiveBayesModel {
 	public void process() throws Exception {
 		
 	    NaiveBayes naiveBayes = new NaiveBayes();
-	    FilteredClassifier filteredClassifier = new FilteredClassifier();
+	    filteredClassifier = new FilteredClassifier();
 	    filteredClassifier.setClassifier(naiveBayes);
 	    // train and make predictions
 	    filteredClassifier.buildClassifier(trainingDataSet);
@@ -97,6 +99,84 @@ public class NaiveBayesModel {
 	    
 	}
 	
+	public String evaluateLastModel(FilteredClassifier filteredClassifier, Instances testingDataSet) {
+		String resultText = "";
+		double truePositive = 0.0;
+		double trueNegative = 0.0;
+		double falsePositive = 0.0;
+		double falseNegative = 0.0;
+		double truePositiveRate = 0.0;
+		double trueNegativeRate = 0.0;
+		double geometricMean = 0.0;
+		double accuracy = 0.0;
+		double precision = 0.0;
+		double recall = 0.0;
+		double fmeasure = 0.0;
+	    FilteredClassifier fc = filteredClassifier;
+	    
+	    try {
+		    
+		    // Testing the model
+		    for (int i = 0; i < testingDataSet.numInstances(); i++) {
+		    	
+			    double predicted = fc.classifyInstance(testingDataSet.instance(i));
+			    double actual = testingDataSet.instance(i).classValue();
+			    predictions[i] = predicted;
+			    
+			    // if a value is 0, we consider it positive (faulty), if it is 1, we consider it negative (not-faulty) 
+			    if(actual == 0.0 && predicted == 0.0) { 
+			    	trueNegative++;
+			    }
+			    else if(actual == 0.0 && predicted == 1.0) {
+			    	falsePositive++;
+			    }
+			    else if(actual == 1.0 && predicted == 1.0) {
+			    	truePositive++;
+			    }
+			    else { // actual == 1.0 && predicted == 0.0
+			    	falseNegative++;
+			    }
+		    }
+		    
+		    accuracy = (truePositive + trueNegative) / testingDataSet.numInstances();
+		    recall = truePositive / (truePositive + falseNegative);
+		    precision = truePositive / (truePositive + falsePositive);
+		    fmeasure = (2 * precision * recall) / (precision + recall);
+		    truePositiveRate = truePositive / (truePositive + falseNegative);
+		    trueNegativeRate = trueNegative / (trueNegative + falsePositive);
+		    geometricMean = Math.sqrt(truePositiveRate * trueNegativeRate);
+		    
+		    resultText += /*"Correctly classified instances: " + */(truePositive + trueNegative) + "\n";
+		    resultText += /*"Incorrectly classified instances: " + */(falsePositive + falseNegative) + "\n";
+		    resultText += /*"Geometric mean: " + */geometricMean + "\n";
+		    resultText += /*"F measure: " + */fmeasure + "\n";
+		    resultText += /*"Precision: " + */precision + "\n";
+		    resultText += /*"Recall: " + */recall + "\n";
+		    resultText += /*"Accuracy: " + */accuracy + "\n";
+		    //resultText += "Confusion matrix: \n" + "TP: " + truePositive + 
+		    //		"\tFN: " + falseNegative + "\n" + "FP: " + falsePositive + "\tTN: " + trueNegative + "\n";
+		    resultText += 
+		    		truePositive + "\n" + 
+		    		falseNegative + "\n" + 
+		    		falsePositive + "\n" + 
+		    		trueNegative + "\n";
+		    
+		    System.out.println("Correctly classified instances: " + (truePositive + trueNegative));
+		    System.out.println("Incorrectly classified instances: " + (falsePositive + falseNegative));
+		    System.out.println("Geometric mean: " + geometricMean);
+		    System.out.println("F measure: " + fmeasure);
+		    System.out.println("Precision: " + precision);
+		    System.out.println("Recall: " + recall);
+		    System.out.println("Accuracy: " + accuracy);
+		    System.out.println("Confusion matrix: \n" + "TP: " + truePositive + 
+		    		"\tFN: " + falseNegative + "\n" + "FP: " + falsePositive + "\tTN: " + trueNegative);
+		    
+		} catch (Exception e) {
+			System.out.println("Something went wrong in  evaluateLastModel method");
+		}
+	    return resultText;
+	}
+	
 	public String getResultText() {
 
 		return resultText.toString();
@@ -135,5 +215,10 @@ public class NaiveBayesModel {
 	public double getFmeasure() {
 		
 		return fmeasure;
+	}
+	
+	public FilteredClassifier getFilteredClassifier() {
+		
+		return filteredClassifier;
 	}
 }
