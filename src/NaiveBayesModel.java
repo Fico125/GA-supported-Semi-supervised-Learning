@@ -117,10 +117,17 @@ public class NaiveBayesModel {
 	    try {
 		    
 		    // Testing the model
+			System.out.println("\nPredictions for \"Best model\": ");
+			resultText += "\nPredictions for \"Best model\": \n";
+
 		    for (int i = 0; i < testingDataSet.numInstances(); i++) {
 		    	
 			    double predicted = fc.classifyInstance(testingDataSet.instance(i));
+			    double[] instancePredictionsPercentage = fc.distributionForInstance(testingDataSet.instance(i));
 			    double actual = testingDataSet.instance(i).classValue();
+		    	//System.out.println(/*"Attribute #" + i + */"Actual: " + actual + ", predicted: " + predicted);
+		    	System.out.println("Actual: " + actual + ", Predicted: " + predicted + ", Probability{0 / 1}: " + instancePredictionsPercentage[0] + " / " + instancePredictionsPercentage[1]);
+		    	resultText += "Actual: " + actual + ", Predicted: " + predicted + ", Probability{0 / 1}: " + instancePredictionsPercentage[0] + " / " + instancePredictionsPercentage[1] + "\n";
 			    predictions[i] = predicted;
 			    
 			    // if a value is 0, we consider it positive (faulty), if it is 1, we consider it negative (not-faulty) 
@@ -146,6 +153,7 @@ public class NaiveBayesModel {
 		    trueNegativeRate = trueNegative / (trueNegative + falsePositive);
 		    geometricMean = Math.sqrt(truePositiveRate * trueNegativeRate);
 		    
+		    resultText += "\n";
 		    resultText += /*"Correctly classified instances: " + */(truePositive + trueNegative) + "\n";
 		    resultText += /*"Incorrectly classified instances: " + */(falsePositive + falseNegative) + "\n";
 		    resultText += /*"Geometric mean: " + */geometricMean + "\n";
@@ -173,6 +181,7 @@ public class NaiveBayesModel {
 		    
 		} catch (Exception e) {
 			System.out.println("Something went wrong in  evaluateLastModel method");
+			e.printStackTrace();
 		}
 	    return resultText;
 	}
