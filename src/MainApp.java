@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Text;
 
 import weka.classifiers.Evaluation;
 import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.meta.FilteredClassifier;
 import weka.core.Instances;
 /** Class containing main method.
  * */
@@ -323,6 +324,23 @@ public class MainApp {
 //			    		falsePositive + "\n" + 
 //			    		trueNegative + "\n");
 			    //Y1'_BEST EVALUATION END
+			    
+			    // ENSEMBLE OF BEST MODELS EVALUATION START
+			    NaiveBayesModel[] bestModels = new NaiveBayesModel[population.getChromosomes().length];
+			    FilteredClassifier[] classifiersOfBestModels = new FilteredClassifier[population.getChromosomes().length];
+			    for(int i = 0; i < population.getChromosomes().length; i++) {
+			    	bestModels[i] = population.getChromosomes()[i].getNaiveBayesOfSelectedChromosome();
+			    	classifiersOfBestModels[i] = bestModels[i].getFilteredClassifier();
+			    }
+			    
+			    int numberOfModelsForEnsemble = 5;
+			    
+			    String ensembleOfModelsOutput = NaiveBayesModel.evaluateEnsembleModel(classifiersOfBestModels, predictionData, numberOfModelsForEnsemble);
+				System.out.println("------------------------------------------------------------------------\n");
+				textScoring.append("------------------------------------------------------------------------\n");
+			    System.out.println("\n\"Ensemble of best models\" statistics: \n"  + ensembleOfModelsOutput);
+			    textScoring.append("\"Ensemble of best models\" statistics: \n" + ensembleOfModelsOutput);
+			    // ENSEMBLE OF BEST MODELS EVALUATION END
 
 			
 			    // BEST MODEL EVALUATION START
