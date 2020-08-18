@@ -109,6 +109,12 @@ public class FileHandler {
     
     public static Instances reduceDatasetByGivenPercent(Instances data, double percent) {
     	
+    	reductionOfDatasetOutput = "";
+    	
+    	if(percent == 0.0) {
+    		return data;
+    	}
+    	
     	Instances new_data = new Instances(data, 0);
     	int newSize = (int) Math.round(data.numInstances() - (data.numInstances() * percent/100));
     	int numZeros = 0;
