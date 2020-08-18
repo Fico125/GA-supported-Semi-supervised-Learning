@@ -1,4 +1,5 @@
 import java.io.IOException;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,10 +17,21 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+//import com.sun.tools.javac.code.Scope.WriteableScope;
+
 import weka.classifiers.Evaluation;
 import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.meta.FilteredClassifier;
 import weka.core.Instances;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import java.io.FileWriter;
+import java.io.PrintWriter;
+
 /** Class containing main method.
  * */
 @SuppressWarnings("unused")
@@ -150,250 +162,263 @@ public class MainApp {
 		btnIzracunaj.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				
-				GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(inputTrain.getData());
-				int generationNumber = 0;
 
-				textCalculation.append("Dataset length: " + GeneticAlgorithm.TARGET_CHROMOSOME.length + "\n");
-				textCalculation.append("Number of generations: " + MAXIMUM_NUMBER_OF_GENERATIONS + "\n");
-				textCalculation.append("Population size: " + GeneticAlgorithm.POPULATION_SIZE + "\n");
-				textCalculation.append("Mutation rate: " + GeneticAlgorithm.MUTATION_RATE + "\n");
-				textCalculation.append("Number of elite chromosomes: " + GeneticAlgorithm.NUMB_OF_ELITE_CHROMOSOMES + "\n");
-				textCalculation.append("Tournament selection size: " + GeneticAlgorithm.TOURNAMENT_SELECTION_SIZE + "\n");
-				
-				Population population = new Population(GeneticAlgorithm.POPULATION_SIZE).initializePopulation();
-				Instances dataWithoutLastColumn = FileHandler.getDataWithoutLastColumn(inputTrain.getData());
-				Instances trainData = dataWithoutLastColumn; // trainData spajamo sa posljednjim stupcem (GA outputom) prilikom izračunavanja fitnessa u metodi computeFitness
-				textCalculation.append("Number of attributes in a dataset: " + trainData.numAttributes() + "\n");
-				
-				//Instances testData = inputTest.getData();
-				//testData = FileHandler.numericToNominal(testData);
-				// We comment upper 2 lines for testData and uncomment these bottom 2 lines if we want to used
-				// reduced dataset for testing purposes.
-				
 				List<Double> listOfReductionPercentages = Arrays.asList(0.0, 50.0, 80.0, 90.0, 95.0, 98.0);
+				String resultText =  "";
 				
-				for (double reductionPercentage : listOfReductionPercentages) 
-				{ 
-					
-				    Instances testData = FileHandler.reduceDatasetByGivenPercent(inputTest.getData(), reductionPercentage);
-				    testData = FileHandler.numericToNominal(testData);
-					
-					Instances predictionData = inputTrain.getData(); // ovo je cijeli test dataset, podaci i zadnji stupac
-					predictionData = FileHandler.numericToNominal(predictionData);
-					
-					population.computeFitness(trainData, testData);
-					
-					while(generationNumber < MAXIMUM_NUMBER_OF_GENERATIONS) {	
+					for (double reductionPercentage : listOfReductionPercentages) 
+					{ 
+						GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(inputTrain.getData());
+						int generationNumber = 0;
+
+						textCalculation.append("Dataset length: " + GeneticAlgorithm.TARGET_CHROMOSOME.length + "\n");
+						textCalculation.append("Number of generations: " + MAXIMUM_NUMBER_OF_GENERATIONS + "\n");
+						textCalculation.append("Population size: " + GeneticAlgorithm.POPULATION_SIZE + "\n");
+						textCalculation.append("Mutation rate: " + GeneticAlgorithm.MUTATION_RATE + "\n");
+						textCalculation.append("Number of elite chromosomes: " + GeneticAlgorithm.NUMB_OF_ELITE_CHROMOSOMES + "\n");
+						textCalculation.append("Tournament selection size: " + GeneticAlgorithm.TOURNAMENT_SELECTION_SIZE + "\n");
 						
-						generationNumber++;
+						Population population = new Population(GeneticAlgorithm.POPULATION_SIZE).initializePopulation();
 						
-						System.out.println("-------------------------------------------------------------------------------------------------------");
-						System.out.println("Gen. num.: " + generationNumber);
-						textCalculation.append("-------------------------------------------------------------------------------------------------------\n");
-						textCalculation.append("-------------------------------------------------------------------------------------------------------");
-						textCalculation.append("\nGeneration number: " + generationNumber + "\n");
+						Instances dataWithoutLastColumn = FileHandler.getDataWithoutLastColumn(inputTrain.getData());
+						Instances trainData = dataWithoutLastColumn; // trainData spajamo sa posljednjim stupcem (GA outputom) prilikom izračunavanja fitnessa u metodi computeFitness
+						textCalculation.append("Number of attributes in a dataset: " + trainData.numAttributes() + "\n");
 						
-						population = geneticAlgorithm.evolve(population, trainData, testData);
-						population.sortChromosomesByFitness();
+					    Instances testData = FileHandler.reduceDatasetByGivenPercent(inputTest.getData(), reductionPercentage);
+					    testData = FileHandler.numericToNominal(testData);
 						
-						String ChromosomeBayesOutput = Chromosome.getOutputTextChromosome();
-						textCalculation.append(ChromosomeBayesOutput);
+						Instances predictionData = inputTrain.getData(); // ovo je cijeli test dataset, podaci i zadnji stupac
+						predictionData = FileHandler.numericToNominal(predictionData);
 						
-						double fitnessOfTheFittestChromosomeInGenerataion = geneticAlgorithm.getFitnessOfTheFittestChromosomeFromGeneration();
-						System.out.println("\n\nFittness of the fittest chromosome in this population: " + String.valueOf(fitnessOfTheFittestChromosomeInGenerataion) + "\n");
-						textCalculation.append("\n\nFittness of the fittest chromosome in this population: " + String.valueOf(fitnessOfTheFittestChromosomeInGenerataion) + "\n");
+						population.computeFitness(trainData, testData);
 						
-						fitnessFunctionEvolution.put(generationNumber, fitnessOfTheFittestChromosomeInGenerataion); // Storing generation number and fitness of the fittest chromosome
-						
-						if(fitnessOfTheFittestChromosomeInGenerataion == 1.0) {
-							break;
+						while(generationNumber < MAXIMUM_NUMBER_OF_GENERATIONS) {	
+							
+							generationNumber++;
+							
+							System.out.println("-------------------------------------------------------------------------------------------------------");
+							System.out.println("Gen. num.: " + generationNumber);
+							textCalculation.append("-------------------------------------------------------------------------------------------------------\n");
+							textCalculation.append("-------------------------------------------------------------------------------------------------------");
+							textCalculation.append("\nGeneration number: " + generationNumber + "\n");
+							
+							population = geneticAlgorithm.evolve(population, trainData, testData);
+							population.sortChromosomesByFitness();
+							
+							String ChromosomeBayesOutput = Chromosome.getOutputTextChromosome();
+							textCalculation.append(ChromosomeBayesOutput);
+							
+							double fitnessOfTheFittestChromosomeInGenerataion = geneticAlgorithm.getFitnessOfTheFittestChromosomeFromGeneration();
+							System.out.println("\n\nFittness of the fittest chromosome in this population: " + String.valueOf(fitnessOfTheFittestChromosomeInGenerataion) + "\n");
+							textCalculation.append("\n\nFittness of the fittest chromosome in this population: " + String.valueOf(fitnessOfTheFittestChromosomeInGenerataion) + "\n");
+							
+							fitnessFunctionEvolution.put(generationNumber, fitnessOfTheFittestChromosomeInGenerataion); // Storing generation number and fitness of the fittest chromosome
+							
+							if(fitnessOfTheFittestChromosomeInGenerataion == 1.0) {
+								break;
+							}
 						}
-					}
-					
-					Chromosome[] lastGenChromosomes = new Chromosome[population.getChromosomes().length];
-					double[] lastGenChromosomesFitness = new double[population.getChromosomes().length];
-					System.out.println("\nChromosomes and their fitness from last generation:\n");
-					//textCalculation.append("\nChromosomes and their fitness from last generation:\n");
-					for (int i = 0; i < GeneticAlgorithm.POPULATION_SIZE; i++  ){
 						
-						System.out.println(population.getChromosomes()[i]  + " | Fitness: " + 
-								String.valueOf(population.getChromosomes()[i].getFitness()) + "\n");
-						lastGenChromosomes[i] = population.getChromosomes()[i];
-						lastGenChromosomesFitness[i] = population.getChromosomes()[i].getFitness();
-						//textCalculation.append("Chromosome #" + i + ": " + population.getChromosomes()[i] + " | Fitness: " + 
-						//		String.valueOf(population.getChromosomes()[i].getFitness()) + "\n");
-					}
-					System.out.println("------------------------------------------------------------------------\n");
-					textCalculation.append("------------------------------------------------------------------------\n");
-					System.out.println("Evolution of the best fitness function through the generations: ");
-					textCalculation.append("Evolution of the best fitness function through the generations: \n");
-					@SuppressWarnings("rawtypes")
-					Set set = fitnessFunctionEvolution.entrySet();
-				    @SuppressWarnings("rawtypes")
-					Iterator iterator = set.iterator();
-				    while(iterator.hasNext()) {
-				    	@SuppressWarnings("rawtypes")
-				    	Map.Entry mentry = (Map.Entry)iterator.next();
-				   		System.out.print("Gen: "+ mentry.getKey() + " \tFF: ");
-				   		//textCalculation.append("Gen: "+ mentry.getKey() + " FF: ");
-				   		System.out.println(mentry.getValue());
-				   		textCalculation.append(mentry.getValue() + "\n");
-				    }
-				    
-				    //Y1'_BEST EVALUATION START
-	//			    double[] predictionsofLastModel = NaiveBayesModel.getPredictions();
-	//			    int[] trainDataLastColumn = FileHandler.getLastColumnValues(inputTrain.getData());
-	//				double truePositive = 0.0;
-	//				double trueNegative = 0.0;
-	//				double falsePositive = 0.0;
-	//				double falseNegative = 0.0;
-	//				double truePositiveRate = 0.0;
-	//				double trueNegativeRate = 0.0;
-	//				double geometricMean = 0.0;
-	//				double precision = 0.0;
-	//			    double accuracy = 0.0;
-	//				double recall = 0.0;
-	//				double fmeasure = 0.0;
-	//				
-	//				System.out.println("\nPredictions for \"Y1'_BEST\": ");
-	//				//textCalculation.append("\nPredictions: \n");
-	//			    for(int i = 0; i < trainDataLastColumn.length; i++) {
-	//			    	
-	//			    	int actual = trainDataLastColumn[i];
-	//			    	int predicted = (int) predictionsofLastModel[i];
-	//			    	System.out.println(/*"Attribute #" + i + */"Actual: " + actual + ", predicted: " + predicted);
-	//			    	//textCalculation.append("Attribute #" + i + ", actual: " + actual + ", predicted: " + predicted + "\n");
-	//
-	//				    // if a value is 0, we consider it positive (faulty), if it is 1, we consider it negative (not-faulty) 
-	//				    if(actual == 0.0 && predicted == 0.0) { 
-	//				    	trueNegative++;
-	//				    }
-	//				    else if(actual == 0.0 && predicted == 1.0) {
-	//				    	falsePositive++;
-	//				    }
-	//				    else if(actual == 1.0 && predicted == 1.0) {
-	//				    	truePositive++;
-	//				    }
-	//				    else { // actual == 1.0 && predicted == 0.0
-	//				    	falseNegative++;
-	//				    }
-	//			    }
-	//			    
-	//			    accuracy = (truePositive + trueNegative) / trainDataLastColumn.length;
-	//			    recall = truePositive / (truePositive + falseNegative);
-	//			    precision = truePositive / (truePositive + falsePositive);
-	//			    fmeasure = (2 * precision * recall) / (precision + recall);
-	//			    truePositiveRate = truePositive / (truePositive + falseNegative);
-	//			    trueNegativeRate = trueNegative / (trueNegative + falsePositive);
-	//			    geometricMean = Math.sqrt(truePositiveRate * trueNegativeRate);
-	//			    
-	//			    System.out.println("\"Y1'_Best\" model statistics: ");
-	//			    textScoring.append("\"Y1'_Best\" model statistics: \n");
-	//			    
-	//			    //System.out.println("Total number of instances: " + trainDataLastColumn.length);
-	//			    //textScoring.append("Total number of instances: " + trainDataLastColumn.length + "\n");
-	//			    
-	//			    System.out.println("Correctly classified instances: " + (truePositive + trueNegative));
-	//			    textScoring.append(/*"Correctly classified instances: " + */(truePositive + trueNegative) + "\n");
-	//			    
-	//			    System.out.println("Incorrectly classified instances: " + (falsePositive + falseNegative));
-	//			    textScoring.append(/*"Incorrectly classified instances: " + */(falsePositive + falseNegative) + "\n");
-	//			    
-	//			    System.out.println("Geometric mean: " + geometricMean);
-	//			    textScoring.append(/*"Geometric mean: " + */geometricMean + "\n");
-	//			    
-	//			    System.out.println("F measure: " + fmeasure);
-	//			    textScoring.append(/*"F measure: " + */fmeasure + "\n");
-	//			    
-	//			    System.out.println("Precision: " + precision);
-	//			    textScoring.append(/*"Precision: " + */precision + "\n");
-	//			    
-	//			    System.out.println("Recall: " + recall);
-	//			    textScoring.append(/*"Recall: " + */recall + "\n");
-	//
-	//			    System.out.println("Accuracy: " + accuracy);
-	//			    textScoring.append(/*"Accuracy: " + */accuracy + "\n");
-	//			    
-	//			    //System.out.println("Confusion matrix: \n" + "TP: " + truePositive + 
-	//			    //		"\tFN: " + falseNegative + "\n" + "FP: " + falsePositive + "\tTN: " + trueNegative);
-	//			    //textScoring.append("Confusion matrix: \n" + "TP: " + truePositive + 
-	//			    //		"\tFN: " + falseNegative + "\n" + "FP: " + falsePositive + "\tTN: " + trueNegative + "\n");
-	//			    System.out.println(
-	//			    		"TP: " + truePositive + "\n" + 
-	//			    		"FN: " + falseNegative + "\n" + 
-	//			    		"FP: " + falsePositive + "\n" + 
-	//			    		"TN: " + trueNegative + "\n");
-	//			    
-	//			    textScoring.append(
-	//			    		truePositive + "\n" + 
-	//			    		falseNegative + "\n" + 
-	//			    		falsePositive + "\n" + 
-	//			    		trueNegative + "\n");
-				    //Y1'_BEST EVALUATION END
-				    
-				    // ENSEMBLE OF BEST MODELS EVALUATION START
-				    /*
-				    NaiveBayesModel[] bestModels = new NaiveBayesModel[population.getChromosomes().length];
-				    FilteredClassifier[] classifiersOfBestModels = new FilteredClassifier[population.getChromosomes().length];
-				    for(int i = 0; i < population.getChromosomes().length; i++) {
-				    	bestModels[i] = population.getChromosomes()[i].getNaiveBayesOfSelectedChromosome();
-				    	classifiersOfBestModels[i] = bestModels[i].getFilteredClassifier();
-				    }
-				    
-				    int numberOfModelsForEnsemble = 5;
-				    
-				    String ensembleOfModelsOutput = NaiveBayesModel.evaluateEnsembleModel(classifiersOfBestModels, predictionData, numberOfModelsForEnsemble);
-					System.out.println("------------------------------------------------------------------------\n");
-					textScoring.append("------------------------------------------------------------------------\n");
-				    System.out.println("\n\"Ensemble of best models\" statistics: \n"  + ensembleOfModelsOutput);
-				    textScoring.append("\"Ensemble of best models\" statistics: \n" + ensembleOfModelsOutput);
-				    */
-				    // ENSEMBLE OF BEST MODELS EVALUATION END
-	
-				
-				    // BEST MODEL EVALUATION START
-					NaiveBayesModel bestModel = population.getChromosomes()[0].getNaiveBayesOfSelectedChromosome();
-					String bestModelOutput = bestModel.evaluateLastModel(bestModel.getFilteredClassifier(), predictionData);
-					System.out.println("------------------------------------------------------------------------\n");
-					textScoring.append("------------------------------------------------------------------------\n");
-					textScoring.append(reductionPercentage + " Reduction percentage" + "\n");
-				    System.out.println("\n\"Best model\" statistics: \n"  + bestModelOutput);
-				    textScoring.append("\"Best model\" statistics: \n" + bestModelOutput);
-				    // BEST MODEL EVALUATION END
-				    
-					// SUPERVISED LEARNING "CALLING METHOD" VERSION START
-				    String standardSupervisedLearningOutput = standardSupervisedLearning(inputTrain.getData(), testData);
-				    textScoring.append(standardSupervisedLearningOutput);
-					// SUPERVISED LEARNING "CALLING METHOD" VERSION END
-				    
-					// SUPERVISED LEARNING "within Izracunaj button" VERSION START
-	//			    try {
-	//
-	//			    	Instances standardTestData = testData;
-	//					Instances standardTrainData = inputTrain.getData();
-	//					standardTrainData = FileHandler.numericToNominal(standardTrainData);
-	//			    	
-	//					// Standard supervised learning using our class NaiveBayesModel and our evaluation without genetic algorithm
-	//					NaiveBayesModel standardNaiveBayes = new NaiveBayesModel(standardTestData, standardTrainData);
-	//					standardNaiveBayes.process();
-	//					String results = standardNaiveBayes.getResultText();
-	//					textScoring.append("------------------------------------------------------------------------\n");
-	//					textScoring.append("Standard Supervised learning statistics: \n" + results + "\n");
-	//	
-	//				} catch (Exception e1) {
-	//					e1.printStackTrace();
-	//				}
-					// SUPERVISED LEARNING "within Izracunaj button" VERSION END
-	
-				    String testDatasetReductionOutput = FileHandler.getReductionOfDatasetOutput();
-				    textScoring.append(testDatasetReductionOutput);
+						Chromosome[] lastGenChromosomes = new Chromosome[population.getChromosomes().length];
+						double[] lastGenChromosomesFitness = new double[population.getChromosomes().length];
+						System.out.println("\nChromosomes and their fitness from last generation:\n");
+						//textCalculation.append("\nChromosomes and their fitness from last generation:\n");
+						for (int i = 0; i < GeneticAlgorithm.POPULATION_SIZE; i++  ){
+							
+							System.out.println(population.getChromosomes()[i]  + " | Fitness: " + 
+									String.valueOf(population.getChromosomes()[i].getFitness()) + "\n");
+							lastGenChromosomes[i] = population.getChromosomes()[i];
+							lastGenChromosomesFitness[i] = population.getChromosomes()[i].getFitness();
+							//textCalculation.append("Chromosome #" + i + ": " + population.getChromosomes()[i] + " | Fitness: " + 
+							//		String.valueOf(population.getChromosomes()[i].getFitness()) + "\n");
+						}
+						System.out.println("------------------------------------------------------------------------\n");
+						textCalculation.append("------------------------------------------------------------------------\n");
+						System.out.println("Evolution of the best fitness function through the generations: ");
+						textCalculation.append("Evolution of the best fitness function through the generations: \n");
+						@SuppressWarnings("rawtypes")
+						Set set = fitnessFunctionEvolution.entrySet();
+					    @SuppressWarnings("rawtypes")
+						Iterator iterator = set.iterator();
+					    while(iterator.hasNext()) {
+					    	@SuppressWarnings("rawtypes")
+					    	Map.Entry mentry = (Map.Entry)iterator.next();
+					   		System.out.print("Gen: "+ mentry.getKey() + " \tFF: ");
+					   		//textCalculation.append("Gen: "+ mentry.getKey() + " FF: ");
+					   		System.out.println(mentry.getValue());
+					   		textCalculation.append(mentry.getValue() + "\n");
+					    }
+					    
+					    //Y1'_BEST EVALUATION START
+		//			    double[] predictionsofLastModel = NaiveBayesModel.getPredictions();
+		//			    int[] trainDataLastColumn = FileHandler.getLastColumnValues(inputTrain.getData());
+		//				double truePositive = 0.0;
+		//				double trueNegative = 0.0;
+		//				double falsePositive = 0.0;
+		//				double falseNegative = 0.0;
+		//				double truePositiveRate = 0.0;
+		//				double trueNegativeRate = 0.0;
+		//				double geometricMean = 0.0;
+		//				double precision = 0.0;
+		//			    double accuracy = 0.0;
+		//				double recall = 0.0;
+		//				double fmeasure = 0.0;
+		//				
+		//				System.out.println("\nPredictions for \"Y1'_BEST\": ");
+		//				//textCalculation.append("\nPredictions: \n");
+		//			    for(int i = 0; i < trainDataLastColumn.length; i++) {
+		//			    	
+		//			    	int actual = trainDataLastColumn[i];
+		//			    	int predicted = (int) predictionsofLastModel[i];
+		//			    	System.out.println(/*"Attribute #" + i + */"Actual: " + actual + ", predicted: " + predicted);
+		//			    	//textCalculation.append("Attribute #" + i + ", actual: " + actual + ", predicted: " + predicted + "\n");
+		//
+		//				    // if a value is 0, we consider it positive (faulty), if it is 1, we consider it negative (not-faulty) 
+		//				    if(actual == 0.0 && predicted == 0.0) { 
+		//				    	trueNegative++;
+		//				    }
+		//				    else if(actual == 0.0 && predicted == 1.0) {
+		//				    	falsePositive++;
+		//				    }
+		//				    else if(actual == 1.0 && predicted == 1.0) {
+		//				    	truePositive++;
+		//				    }
+		//				    else { // actual == 1.0 && predicted == 0.0
+		//				    	falseNegative++;
+		//				    }
+		//			    }
+		//			    
+		//			    accuracy = (truePositive + trueNegative) / trainDataLastColumn.length;
+		//			    recall = truePositive / (truePositive + falseNegative);
+		//			    precision = truePositive / (truePositive + falsePositive);
+		//			    fmeasure = (2 * precision * recall) / (precision + recall);
+		//			    truePositiveRate = truePositive / (truePositive + falseNegative);
+		//			    trueNegativeRate = trueNegative / (trueNegative + falsePositive);
+		//			    geometricMean = Math.sqrt(truePositiveRate * trueNegativeRate);
+		//			    
+		//			    System.out.println("\"Y1'_Best\" model statistics: ");
+		//			    textScoring.append("\"Y1'_Best\" model statistics: \n");
+		//			    
+		//			    //System.out.println("Total number of instances: " + trainDataLastColumn.length);
+		//			    //textScoring.append("Total number of instances: " + trainDataLastColumn.length + "\n");
+		//			    
+		//			    System.out.println("Correctly classified instances: " + (truePositive + trueNegative));
+		//			    textScoring.append(/*"Correctly classified instances: " + */(truePositive + trueNegative) + "\n");
+		//			    
+		//			    System.out.println("Incorrectly classified instances: " + (falsePositive + falseNegative));
+		//			    textScoring.append(/*"Incorrectly classified instances: " + */(falsePositive + falseNegative) + "\n");
+		//			    
+		//			    System.out.println("Geometric mean: " + geometricMean);
+		//			    textScoring.append(/*"Geometric mean: " + */geometricMean + "\n");
+		//			    
+		//			    System.out.println("F measure: " + fmeasure);
+		//			    textScoring.append(/*"F measure: " + */fmeasure + "\n");
+		//			    
+		//			    System.out.println("Precision: " + precision);
+		//			    textScoring.append(/*"Precision: " + */precision + "\n");
+		//			    
+		//			    System.out.println("Recall: " + recall);
+		//			    textScoring.append(/*"Recall: " + */recall + "\n");
+		//
+		//			    System.out.println("Accuracy: " + accuracy);
+		//			    textScoring.append(/*"Accuracy: " + */accuracy + "\n");
+		//			    
+		//			    //System.out.println("Confusion matrix: \n" + "TP: " + truePositive + 
+		//			    //		"\tFN: " + falseNegative + "\n" + "FP: " + falsePositive + "\tTN: " + trueNegative);
+		//			    //textScoring.append("Confusion matrix: \n" + "TP: " + truePositive + 
+		//			    //		"\tFN: " + falseNegative + "\n" + "FP: " + falsePositive + "\tTN: " + trueNegative + "\n");
+		//			    System.out.println(
+		//			    		"TP: " + truePositive + "\n" + 
+		//			    		"FN: " + falseNegative + "\n" + 
+		//			    		"FP: " + falsePositive + "\n" + 
+		//			    		"TN: " + trueNegative + "\n");
+		//			    
+		//			    textScoring.append(
+		//			    		truePositive + "\n" + 
+		//			    		falseNegative + "\n" + 
+		//			    		falsePositive + "\n" + 
+		//			    		trueNegative + "\n");
+					    //Y1'_BEST EVALUATION END
+					    
+					    // ENSEMBLE OF BEST MODELS EVALUATION START
+					    /*
+					    NaiveBayesModel[] bestModels = new NaiveBayesModel[population.getChromosomes().length];
+					    FilteredClassifier[] classifiersOfBestModels = new FilteredClassifier[population.getChromosomes().length];
+					    for(int i = 0; i < population.getChromosomes().length; i++) {
+					    	bestModels[i] = population.getChromosomes()[i].getNaiveBayesOfSelectedChromosome();
+					    	classifiersOfBestModels[i] = bestModels[i].getFilteredClassifier();
+					    }
+					    
+					    int numberOfModelsForEnsemble = 5;
+					    
+					    String ensembleOfModelsOutput = NaiveBayesModel.evaluateEnsembleModel(classifiersOfBestModels, predictionData, numberOfModelsForEnsemble);
+						System.out.println("------------------------------------------------------------------------\n");
+						textScoring.append("------------------------------------------------------------------------\n");
+					    System.out.println("\n\"Ensemble of best models\" statistics: \n"  + ensembleOfModelsOutput);
+					    textScoring.append("\"Ensemble of best models\" statistics: \n" + ensembleOfModelsOutput);
+					    */
+					    // ENSEMBLE OF BEST MODELS EVALUATION END
+		
 					
-				    System.out.println("------------------------------------------------------------------------\n");
-				    textCalculation.append("------------------------------------------------------------------------\n");
-				    String hammingDistanceOutput = calculateHammingDistanceBetweenChromosomes(lastGenChromosomes, lastGenChromosomesFitness);
-				    textCalculation.append(hammingDistanceOutput);
-				}
+					    // BEST MODEL EVALUATION START
+						NaiveBayesModel bestModel = population.getChromosomes()[0].getNaiveBayesOfSelectedChromosome();
+						String bestModelOutput = bestModel.evaluateLastModel(bestModel.getFilteredClassifier(), predictionData);
+						System.out.println("------------------------------------------------------------------------\n");
+						textScoring.append("------------------------------------------------------------------------\n");
+						textScoring.append(reductionPercentage + " Reduction percentage" + "\n");
+						resultText += reductionPercentage + " Reduction percentage" + "\n";
+					    System.out.println("\n\"Best model\" statistics: \n"  + bestModelOutput);
+					    textScoring.append("\"Best model\" statistics: \n" + bestModelOutput);
+					    resultText += "\"Best model\" statistics: \n" + bestModelOutput;
+					    // BEST MODEL EVALUATION END
+					    
+						// SUPERVISED LEARNING "CALLING METHOD" VERSION START
+					    String standardSupervisedLearningOutput = standardSupervisedLearning(inputTrain.getData(), testData);
+					    textScoring.append(standardSupervisedLearningOutput);
+					    resultText += standardSupervisedLearningOutput;
+					    
+						// SUPERVISED LEARNING "CALLING METHOD" VERSION END
+					    
+						// SUPERVISED LEARNING "within Izracunaj button" VERSION START
+		//			    try {
+		//
+		//			    	Instances standardTestData = testData;
+		//					Instances standardTrainData = inputTrain.getData();
+		//					standardTrainData = FileHandler.numericToNominal(standardTrainData);
+		//			    	
+		//					// Standard supervised learning using our class NaiveBayesModel and our evaluation without genetic algorithm
+		//					NaiveBayesModel standardNaiveBayes = new NaiveBayesModel(standardTestData, standardTrainData);
+		//					standardNaiveBayes.process();
+		//					String results = standardNaiveBayes.getResultText();
+		//					textScoring.append("------------------------------------------------------------------------\n");
+		//					textScoring.append("Standard Supervised learning statistics: \n" + results + "\n");
+		//	
+		//				} catch (Exception e1) {
+		//					e1.printStackTrace();
+		//				}
+						// SUPERVISED LEARNING "within Izracunaj button" VERSION END
+		
+					    String testDatasetReductionOutput = FileHandler.getReductionOfDatasetOutput();
+					    textScoring.append(testDatasetReductionOutput);
+						
+					    System.out.println("------------------------------------------------------------------------\n");
+					    textCalculation.append("------------------------------------------------------------------------\n");
+					    String hammingDistanceOutput = calculateHammingDistanceBetweenChromosomes(lastGenChromosomes, lastGenChromosomesFitness);
+					    textCalculation.append(hammingDistanceOutput);
+					}
+					
+					String pathToResultFile = "C:\\Users\\Filip\\Desktop\\Izborni_projekt\\ResultFile.txt";
+
+					try {
+						
+						FileWriter write = new FileWriter(pathToResultFile, false);
+						write.write(resultText);
+						write.close();
+					} catch (IOException e1) {
+					
+						e1.printStackTrace();
+					}
+				
 			}
 		});		
 	}
