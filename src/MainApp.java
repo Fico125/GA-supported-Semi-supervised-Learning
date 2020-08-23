@@ -168,6 +168,7 @@ public class MainApp {
 				
 					for (double reductionPercentage : listOfReductionPercentages) 
 					{ 
+						fitnessFunctionEvolution.clear();
 						GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(inputTrain.getData());
 						int generationNumber = 0;
 
@@ -192,7 +193,9 @@ public class MainApp {
 						
 						population.computeFitness(trainData, testData);
 						
-						while(generationNumber < MAXIMUM_NUMBER_OF_GENERATIONS) {	
+						double fitnessOfTheFittestChromosomeInGeneration = 0;
+						
+						while(fitnessOfTheFittestChromosomeInGeneration < 1.0 && generationNumber < MAXIMUM_NUMBER_OF_GENERATIONS) {	
 							
 							generationNumber++;
 							
@@ -208,15 +211,16 @@ public class MainApp {
 							String ChromosomeBayesOutput = Chromosome.getOutputTextChromosome();
 							textCalculation.append(ChromosomeBayesOutput);
 							
-							double fitnessOfTheFittestChromosomeInGenerataion = geneticAlgorithm.getFitnessOfTheFittestChromosomeFromGeneration();
-							System.out.println("\n\nFittness of the fittest chromosome in this population: " + String.valueOf(fitnessOfTheFittestChromosomeInGenerataion) + "\n");
-							textCalculation.append("\n\nFittness of the fittest chromosome in this population: " + String.valueOf(fitnessOfTheFittestChromosomeInGenerataion) + "\n");
+							fitnessOfTheFittestChromosomeInGeneration = geneticAlgorithm.getFitnessOfTheFittestChromosomeFromGeneration();
+							System.out.println("\n\nFittness of the fittest chromosome in this population: " + String.valueOf(fitnessOfTheFittestChromosomeInGeneration) + "\n");
+							textCalculation.append("\n\nFittness of the fittest chromosome in this population: " + String.valueOf(fitnessOfTheFittestChromosomeInGeneration) + "\n");
 							
-							fitnessFunctionEvolution.put(generationNumber, fitnessOfTheFittestChromosomeInGenerataion); // Storing generation number and fitness of the fittest chromosome
+							fitnessFunctionEvolution.put(generationNumber, fitnessOfTheFittestChromosomeInGeneration); // Storing generation number and fitness of the fittest chromosome
 							
-							if(fitnessOfTheFittestChromosomeInGenerataion == 1.0) {
+							/*if(fitnessOfTheFittestChromosomeInGenerataion == 1.0) {
 								break;
 							}
+							*/
 						}
 						
 						Chromosome[] lastGenChromosomes = new Chromosome[population.getChromosomes().length];
